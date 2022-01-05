@@ -2,8 +2,9 @@ package main
 
 import (
 	"os"
-	"whalego/connection"
-	"whalego/services/telegram/ChatService"
+	"whalego/models/Channel"
+	// "whalego/connection"
+	// "whalego/services/telegram/ChatService"
 )
 
 func newFile (val []byte) {
@@ -20,7 +21,7 @@ func newFile (val []byte) {
 }
 
 func main() {
-    tdlibClient := connection.TdConnection(true)
+    /* tdlibClient := connection.TdConnection(true)
 
     chat := ChatService.New(tdlibClient)
 
@@ -31,5 +32,7 @@ func main() {
         panic(err)
     }
 
-    newFile(mjson)
+    newFile(mjson) */
+
+    Channel.New().All()
 }
