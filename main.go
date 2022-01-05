@@ -1,36 +1,35 @@
 package main
 
 import (
-	"fmt"
-	"log"
+	"os"
 	"whalego/connection"
-
-	"github.com/zelenin/go-tdlib/client"
+	"whalego/services/telegram/ChatService"
 )
+
+func newFile (val []byte) {
+    f, err := os.Create("./result.json")
+    if err != nil {
+        panic(err)
+    }
+
+    defer f.Close()
+
+    f.Write(val)
+
+    f.Sync()
+}
 
 func main() {
     tdlibClient := connection.TdConnection(true)
 
-    user, err := tdlibClient.SearchPublicChat(&client.SearchPublicChatRequest{
-        Username: "iya30n",
-    })
+    chat := ChatService.New(tdlibClient)
 
+    messages := chat.GetMessages("be3t_proxy")
+
+    mjson, err := messages.MarshalJSON()
     if err != nil {
-		log.Fatalf("Get user error: %s", err)
+        panic(err)
     }
 
-    msg, err := tdlibClient.SendMessage(&client.SendMessageRequest{
-        ChatId: user.Id,
-        InputMessageContent: &client.InputMessageText{
-            Text: &client.FormattedText{
-                Text: "salam from whalego",
-            },
-        },
-    })
-
-    if err != nil {
-		log.Fatalf("Get user error: %s", err)
-    }
-
-    fmt.Println(msg)
+    newFile(mjson)
 }
