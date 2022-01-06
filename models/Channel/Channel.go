@@ -32,5 +32,9 @@ func (c *Channel) FindByUsername(username string) *Channel {
 
 	db.Find(&c, "username = ?", username)
 
+	if c.Username == "" {
+		panic("the channel " + username + " does not exists.")
+	}
+
 	return c
 }
