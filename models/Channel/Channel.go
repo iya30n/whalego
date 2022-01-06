@@ -48,5 +48,5 @@ func (c *Channel) Update(data map[string]interface{}) {
 func (c *Channel) Delete() {
 	db := database.Connect()
 
-	db.Delete(&c)
+	db.Unscoped().Delete(&c)
 }
