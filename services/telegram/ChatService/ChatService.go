@@ -1,7 +1,7 @@
 package ChatService
 
 import (
-	"log"
+	"whalego/errorHandler"
 
 	"github.com/zelenin/go-tdlib/client"
 )
@@ -24,10 +24,7 @@ func (cs *ChatService) GetChatId(username string) int64 {
 
 	// TODO: check if chat not found
 
-	// TODO: chat error handler here.
-	if err != nil {
-		panic(err)
-	}
+	errorHandler.LogFile(err)
 
 	return chat.Id
 }
@@ -42,9 +39,7 @@ func (cs *ChatService) GetMessages(username string) *client.Messages {
         OnlyLocal: false,
     })
 
-	if err != nil {
-		log.Fatalf("Get user error: %s", err)
-    }
+	errorHandler.LogFile(err)
 
 	return result
 }
@@ -57,10 +52,7 @@ func (cs *ChatService) SendMessage(username string, message client.InputMessageC
         InputMessageContent: message,
     })
 
-	// TODO: use error handler here
-	if err != nil {
-		panic(err)
-	}
+	errorHandler.LogFile(err)
 
 	return msg
 }

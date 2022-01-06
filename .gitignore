@@ -2,3 +2,4 @@
 main
 result.json
 .vscode
+*.txt
