@@ -30,6 +30,7 @@ func (cs *ChatService) GetChatId(username string) int64 {
 
 	if err.Error() == "USERNAME_NOT_OCCUPIED" || chat == nil {
 		channel.Delete()
+		os.Exit(1)
 	} else {
 		errorHandler.LogFile(err)
 	}
