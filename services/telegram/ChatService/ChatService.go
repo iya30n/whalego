@@ -17,7 +17,12 @@ func New(connection *client.Client) *ChatService {
 }
 
 func (cs *ChatService) GetChatId(username string) int64 {
-	// TODO: return chat_id from db->channels; else get it from telegram and update the channel is null chat_id
+	channel := Channel.New().FindByUsername(username)
+
+	if channel.ChatId != 0 {
+		return channel.ChatId
+	}
+
 	chat, err := cs.tgConnection.SearchPublicChat(&client.SearchPublicChatRequest{
 		Username: username,
 	})
@@ -25,6 +30,11 @@ func (cs *ChatService) GetChatId(username string) int64 {
 	// TODO: check if chat not found
 
 	errorHandler.LogFile(err)
+	}
+
+	channel.Update(map[string]interface{} {
+		"chat_id": chat.Id,
+	})
 
 	return chat.Id
 }
