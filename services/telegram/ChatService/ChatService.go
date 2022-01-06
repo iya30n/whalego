@@ -2,6 +2,7 @@ package ChatService
 
 import (
 	"whalego/errorHandler"
+	"whalego/models/Channel"
 
 	"github.com/zelenin/go-tdlib/client"
 )
@@ -27,9 +28,10 @@ func (cs *ChatService) GetChatId(username string) int64 {
 		Username: username,
 	})
 
-	// TODO: check if chat not found
-
-	errorHandler.LogFile(err)
+	if err.Error() == "USERNAME_NOT_OCCUPIED" || chat == nil {
+		channel.Delete()
+	} else {
+		errorHandler.LogFile(err)
 	}
 
 	channel.Update(map[string]interface{} {
