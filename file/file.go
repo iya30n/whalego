@@ -2,6 +2,7 @@ package file
 
 import (
 	"bufio"
+	"errors"
 	"os"
 )
 
@@ -36,4 +37,12 @@ func AddToFile(path string, value string) {
 	writer.WriteString(value)
 
 	writer.Flush()
+}
+
+func AddOrCreate (path string, value string) {
+	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
+		NewFile(path, value)
+	} else {
+		AddToFile(path, value)
+	}
 }
