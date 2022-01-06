@@ -1,6 +1,7 @@
 package ChatService
 
 import (
+	"os"
 	"whalego/errorHandler"
 	"whalego/models/Channel"
 
