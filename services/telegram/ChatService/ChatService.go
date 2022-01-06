@@ -1,7 +1,6 @@
 package ChatService
 
 import (
-	"log"
 	"whalego/errorHandler"
 
 	"github.com/zelenin/go-tdlib/client"

@@ -1,7 +1,6 @@
 package connection
 
 import (
-	"log"
 	"path/filepath"
 	"whalego/errorHandler"
 
