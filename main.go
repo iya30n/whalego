@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"os"
 	"whalego/models/Channel"
 	// "whalego/connection"
@@ -34,5 +35,7 @@ func main() {
 
     newFile(mjson) */
 
-    Channel.New().All()
+    channel := Channel.New().FindByUsername("@darkproxyy")
+
+    log.Println(channel.Handler)
 }
