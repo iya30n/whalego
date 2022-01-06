@@ -40,9 +40,7 @@ func (cs *ChatService) GetMessages(username string) *client.Messages {
         OnlyLocal: false,
     })
 
-	if err != nil {
-		log.Fatalf("Get user error: %s", err)
-    }
+	errorHandler.LogFile(err)
 
 	return result
 }

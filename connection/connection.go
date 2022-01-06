@@ -3,6 +3,7 @@ package connection
 import (
 	"log"
 	"path/filepath"
+	"whalego/errorHandler"
 
 	"github.com/zelenin/go-tdlib/client"
 )
@@ -64,9 +65,7 @@ func TdConnection(withProxy bool) *client.Client {
 
 	tdlibClient, err := client.NewClient(authorizer, options...)
 
-	if err != nil {
-		log.Fatalf("NewClient error: %s", err)
-	}
+	errorHandler.LogFile(err)
 
 	return tdlibClient
 }
