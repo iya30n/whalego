@@ -2,8 +2,7 @@ package Channel
 
 import (
 	"log"
-
-	"gorm.io/driver/mysql"
+	"whalego/database"
 	"gorm.io/gorm"
 )
 
@@ -20,15 +19,9 @@ func New() *Channel {
 }
 
 func (c *Channel) All() {
-	dsn := "root:@tcp(127.0.0.1:3306)/whaleproxy?charset=utf8mb4&parseTime=True&loc=Local"
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db := database.Connect()
 
 	db.AutoMigrate(c)
-
-	// TODO: use err handler here
-	if err != nil {
-		panic(err)
-	}
 
 	// channel := &Channel{}
 	// result, _ := db.Select("username", "handler").Find(&channel).Rows()
