@@ -38,3 +38,15 @@ func (c *Channel) FindByUsername(username string) *Channel {
 
 	return c
 }
+
+func (c *Channel) Update(data map[string]interface{}) {
+	db := database.Connect()
+
+	db.Model(&c).Updates(data)
+}
+
+func (c *Channel) Delete() {
+	db := database.Connect()
+
+	db.Delete(&c)
+}
