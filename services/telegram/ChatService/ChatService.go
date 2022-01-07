@@ -29,12 +29,12 @@ func (cs *ChatService) GetChatId(username string) int64 {
 		Username: username,
 	})
 
-	if err.Error() == "USERNAME_NOT_OCCUPIED" || chat == nil {
+	if err.Error() == "USERNAME_NOT_OCCUPIED" && chat == nil {
 		channel.Delete()
 		os.Exit(1)
-	} else {
-		errorHandler.LogFile(err)
 	}
+
+	errorHandler.LogFile(err)
 
 	channel.Update(map[string]interface{} {
 		"chat_id": chat.Id,
