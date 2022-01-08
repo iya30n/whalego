@@ -42,31 +42,3 @@ func (cs *ChatService) GetChatId(username string) int64 {
 
 	return chat.Id
 }
-
-func (cs *ChatService) GetMessages(username string) *client.Messages {
-	chatId := cs.GetChatId(username)
-
-	result, err := cs.tgConnection.GetChatHistory(&client.GetChatHistoryRequest{
-        ChatId: chatId,
-        Offset: 0,
-        Limit: 99,
-        OnlyLocal: false,
-    })
-
-	errorHandler.LogFile(err)
-
-	return result
-}
-
-func (cs *ChatService) SendMessage(username string, message client.InputMessageContent) *client.Message {
-	chatId := cs.GetChatId(username)
-
-	msg, err := cs.tgConnection.SendMessage(&client.SendMessageRequest{
-        ChatId: chatId,
-        InputMessageContent: message,
-    })
-
-	errorHandler.LogFile(err)
-
-	return msg
-}
