@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	// "whalego/database/migration"
 )
 
 func newFile (val []byte) {
@@ -18,5 +19,5 @@ func newFile (val []byte) {
 }
 
 func main() {
-    
+    // migration.Migrate()
 }

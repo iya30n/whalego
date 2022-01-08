@@ -1,4 +1,4 @@
-package main
+package migration
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"whalego/models/Channel"
 )
 
-func main() {
+func Migrate() {
 	db := database.Connect()
 
 	models := map[string]interface{} {
