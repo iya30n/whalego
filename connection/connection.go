@@ -51,11 +51,11 @@ func TdConnection(withProxy bool) *client.Client {
 				Username: "",
 				Password: "",
 			}, */
-			Server: "23.88.48.140",
+			Server: "trichiasis.www.Bmi.ir.Bmi--ir.ml",
 			Port:   443,
 			Enable: true,
 			Type: &client.ProxyTypeMtproto{
-				Secret: "DD89c92f4f14e9f5144f7f256b0feed874",
+				Secret: "7jK5IN_7UWQwKOL2uHjU6sFjZG4uaW50ZXJuZXQub3Jn",
 			},
 		})
 
