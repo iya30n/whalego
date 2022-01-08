@@ -3,6 +3,8 @@ package MessageService
 import (
 	"whalego/errorHandler"
 
+	"whalego/connection"
+
 	"github.com/zelenin/go-tdlib/client"
 )
 
@@ -10,9 +12,9 @@ type MessageService struct {
 	tgConnection *client.Client
 }
 
-func New(connection *client.Client) *MessageService {
+func New() *MessageService {
 	return &MessageService{
-		tgConnection: connection,
+		tgConnection: connection.TdConnection(true),
 	}
 }
 
