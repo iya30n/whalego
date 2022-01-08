@@ -13,7 +13,7 @@ type Channel struct {
 	gorm.Model
 	Username             string `gorm: "NOT NULL;size:256"`
 	ChatId               int64  `gorm: "int, unique;"`
-	Last_message_receive int    `gorm: "int;"`
+	Last_message_receive int64    `gorm: "int;"`
 	Handler              string `gorm: "NOT NULL;size:30"`
 }
 
