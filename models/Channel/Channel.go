@@ -1,7 +1,11 @@
 package Channel
 
 import (
+	"os"
 	"whalego/database"
+	"whalego/errorHandler"
+	"whalego/services/telegram/ChatService"
+
 	"gorm.io/gorm"
 )
 
@@ -49,4 +53,25 @@ func (c *Channel) Delete() {
 	db := database.Connect()
 
 	db.Unscoped().Delete(&c)
+}
+
+func (c *Channel) GetChatId() int64 {
+	if c.ChatId != 0 {
+		return c.ChatId
+	}
+
+	chat, err := ChatService.New().GetChatId(c.Username)
+
+	 if err.Error() == "USERNAME_NOT_OCCUPIED" && chat == nil {
+		c.Delete()
+		os.Exit(1)
+	}
+
+	errorHandler.LogFile(err)
+
+	c.Update(map[string]interface{} {
+		"chat_id": chat.Id,
+	})
+
+	return chat.Id
 }
