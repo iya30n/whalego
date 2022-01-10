@@ -85,6 +85,33 @@ func (ps *ProxyService) isValidProxy(proxy string) bool {
 	return contains
 }
 
+func (ps *ProxyService) GetProxyData(proxy string) map[string]interface{} {
+	data, err := url.ParseQuery(proxy)
+	errorHandler.LogFile(err)
+
+	server, ok := data["http://t.me/proxy?server"]
+	if !ok {
+		return nil
+	}
+
+	port, ok := data["port"]
+	if !ok {
+		return nil
+	}
+
+	secret, ok := data["secret"]
+	if !ok {
+		return nil
+	}
+
+	return map[string]interface{}{
+		"link": proxy,
+		"server": server[0],
+		"port": port[0],
+		"secret": secret[0],
+	}
+}
+
 func (ps *ProxyService) checkAvailability(proxy string) {
 	
 }
