@@ -21,8 +21,8 @@ func New() *MessageService {
 func (ms *MessageService) GetMessages(chatId int64, fromMessage int64) *client.Messages {
 	result, err := ms.tgConnection.GetChatHistory(&client.GetChatHistoryRequest{
         ChatId: chatId,
-		FromMessageId: fromMessage,
-        // Offset: 0,
+		// FromMessageId: fromMessage,
+        Offset: 0,
         Limit: 99,
         OnlyLocal: false,
     })

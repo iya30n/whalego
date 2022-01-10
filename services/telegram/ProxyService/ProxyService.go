@@ -9,7 +9,6 @@ import (
 )
 
 type ProxyService struct {
-
 }
 
 func New() *ProxyService {
@@ -30,16 +29,37 @@ func (ps *ProxyService) GetProxies() {
 
 		for _, message := range messages.Messages {
 			if channel.Handler == "text" {
-				content := message.Content.(*client.MessageText).Text.Entities[0]
-
-				url := content.Type.(*client.TextEntityTypeTextUrl).Url
-
-				fmt.Println(url)
+				ps.textMessageHandler(message)
 			}
 
 			if channel.Handler == "button" {
-
+				ps.buttonMessageHandler(message)
 			}
 		}
 	}
+
+	/* channelModel := Channel.New().FindByUsername("proxymtproto")
+	chatId := channelModel.GetChatId()
+	messages := MessageService.New().GetMessages(chatId, channelModel.Last_message_receive)
+
+	for _, message := range messages.Messages {
+		ps.buttonMessageHandler(message)
+	} */
+
+}
+
+func (ps *ProxyService) textMessageHandler(message *client.Message) {
+	content := message.Content.(*client.MessageText).Text.Entities[0]
+
+	url := content.Type.(*client.TextEntityTypeTextUrl).Url
+
+	fmt.Println(url)
+}
+
+func (ps *ProxyService) buttonMessageHandler(message *client.Message) {
+	replyMarkup := message.ReplyMarkup.(*client.ReplyMarkupInlineKeyboard).Rows[0][0]
+
+	url := replyMarkup.Type.(*client.InlineKeyboardButtonTypeUrl).Url
+
+	fmt.Println(url)
 }
