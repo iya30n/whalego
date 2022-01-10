@@ -2,6 +2,7 @@ package ProxyService
 
 import (
 	"fmt"
+	"strings"
 	"whalego/models/Channel"
 	"whalego/services/telegram/MessageService"
 
@@ -28,12 +29,18 @@ func (ps *ProxyService) GetProxies() {
 		}
 
 		for _, message := range messages.Messages {
+			var proxy string
+
 			if channel.Handler == "text" {
-				ps.textMessageHandler(message)
+				proxy = ps.textMessageHandler(message)
 			}
 
 			if channel.Handler == "button" {
-				ps.buttonMessageHandler(message)
+				proxy = ps.buttonMessageHandler(message)
+			}
+
+			if ps.isValidProxy(proxy) {
+				// TODO : save
 			}
 		}
 	}
@@ -48,18 +55,32 @@ func (ps *ProxyService) GetProxies() {
 
 }
 
-func (ps *ProxyService) textMessageHandler(message *client.Message) {
+func (ps *ProxyService) textMessageHandler(message *client.Message) string {
 	content := message.Content.(*client.MessageText).Text.Entities[0]
 
 	url := content.Type.(*client.TextEntityTypeTextUrl).Url
 
-	fmt.Println(url)
+	return url
 }
 
-func (ps *ProxyService) buttonMessageHandler(message *client.Message) {
+func (ps *ProxyService) buttonMessageHandler(message *client.Message) string {
 	replyMarkup := message.ReplyMarkup.(*client.ReplyMarkupInlineKeyboard).Rows[0][0]
 
 	url := replyMarkup.Type.(*client.InlineKeyboardButtonTypeUrl).Url
 
-	fmt.Println(url)
+	return url
+}
+
+func (ps *ProxyService) isValidProxy(proxy string) bool {
+	contains := false
+
+	for _, word := range []string{"server", "port", "proxy"} {
+		contains = strings.Contains(proxy, word)
+	}
+
+	return contains
+}
+
+func (ps *ProxyService) checkAvailability(proxy string) {
+	
 }
