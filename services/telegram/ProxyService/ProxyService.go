@@ -4,9 +4,12 @@ import (
 	// "errors"
 	"fmt"
 	"net/url"
+	"strconv"
 	"strings"
 	"whalego/connection"
 	"whalego/errorHandler"
+	"whalego/models/Proxy"
+
 	// "whalego/models/Channel"
 	// "whalego/services/telegram/MessageService"
 
@@ -59,20 +62,20 @@ func (ps *ProxyService) GetProxies() {
 	messages := MessageService.New().GetMessages(chatId, channelModel.Last_message_receive) */
 
 	// for _, message := range messages.Messages {
-		// proxy := ps.buttonMessageHandler(message)
+	// proxy := ps.buttonMessageHandler(message)
 
-		proxy := "https://t.me/proxy?server=23.88.48.140&port=443&secret=DD89c92f4f14e9f5144f7f256b0feed874"
+	proxy := "https://t.me/proxy?server=23.88.48.140&port=443&secret=DD89c92f4f14e9f5144f7f256b0feed874"
 
-		/* if !ps.isValidProxy(proxy) {
-			continue
-		} */	
+	/* if !ps.isValidProxy(proxy) {
+		continue
+	} */
 
-		proxyData := ps.getProxyData(proxy)
-		/* if proxyData == nil {
-			continue
-		} */
+	proxyData := ps.getProxyData(proxy)
+	/* if proxyData == nil {
+		continue
+	} */
 
-		ps.checkProxyIsAvailable(proxyData)
+	ps.checkProxyIsAvailable(proxyData)
 	// }
 }
 
@@ -106,65 +109,44 @@ func (ps *ProxyService) isValidProxy(proxy string) bool {
 	return contains
 }
 
-func (ps *ProxyService) getProxyData(proxy string) map[string]interface{} {
+func (ps *ProxyService) getProxyData(proxy string) Proxy.Proxy {
 	u, err := url.Parse(proxy)
 	errorHandler.LogFile(err)
 
 	values, err := url.ParseQuery(u.RawQuery)
 	errorHandler.LogFile(err)
 
-	return map[string]interface{}{
-		"link": proxy,
-		"server": values.Get("server"),
-		"port": values.Get("port"),
-		"secret": values.Get("secret"),
-	}
-
-	/* data, err := url.ParseQuery(proxy)
+	port, err := strconv.ParseInt(values.Get("port"), 10, 32)
 	errorHandler.LogFile(err)
 
-	server, ok := data["https://t.me/proxy?server"]
-	if !ok {
-		return nil
+	return Proxy.Proxy {
+		Link:   proxy,
+		Server: values.Get("server"),
+		Port:   int32(port),
+		Secret: values.Get("secret"),
 	}
 
-	port, ok := data["port"]
-	if !ok {
-		return nil
-	}
-
-	secret, ok := data["secret"]
-	if !ok {
-		return nil
-	}
-
-	return map[string]interface{}{
-		"link": proxy,
-		"server": server[0],
-		"port": port[0],
-		"secret": secret[0],
+	/* return map[string]interface{}{
+		"link":   proxy,
+		"server": values.Get("server"),
+		"port":   int32(port),
+		"secret": values.Get("secret"),
 	} */
 }
 
-func (ps *ProxyService) checkProxyIsAvailable(proxy map[string]interface{}) {
-	ok,err := connection.TdConnection(true).TestProxy(&client.TestProxyRequest{
-		// Server: fmt.Sprint(proxy["server"]),
-		Server: "23.88.48.140",
-		Port: 443,
+func (ps *ProxyService) checkProxyIsAvailable(proxy Proxy.Proxy) {
+	ok, err := connection.TdConnection(true).TestProxy(&client.TestProxyRequest{
+		Server: proxy.Server,
+		Port:   proxy.Port,
 		Type: &client.ProxyTypeMtproto{
-			Secret: "DD89c92f4f14e9f5144f7f256b0feed874",
+			Secret: proxy.Secret,
 		},
-		Timeout: 12000,
+		Timeout: 12000000000,
 	})
 
-	/* ok,err := connection.TdConnection(true).TestProxy(&client.TestProxyRequest{
-		// Server: fmt.Sprint(proxy["server"]),
-		Server: proxy["server"].(string),
-		Port: proxy["port"].(int32),
-		Type: &client.ProxyTypeMtproto{},
+	/* connection.TdConnection(false).PingProxy(&client.PingProxyRequest{
+		ProxyId: ,
 	}) */
-
-	// connection.TdConnection(false).PingProxy(&client.PingProxyRequest{})
 
 	errorHandler.LogFile(err)
 
