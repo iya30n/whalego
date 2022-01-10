@@ -44,19 +44,19 @@ func TdConnection(withProxy bool) *client.Client {
 
 	if withProxy == true {
 		proxy := client.WithProxy(&client.AddProxyRequest{
-			/* Server: "127.0.0.1",
+			Server: "127.0.0.1",
 			Port:   9050,
 			Enable: true,
 			Type: &client.ProxyTypeSocks5{
 				Username: "",
 				Password: "",
-			}, */
-			Server: "trichiasis.www.Bmi.ir.Bmi--ir.ml",
+			},
+			/* Server: "trichiasis.www.Bmi.ir.Bmi--ir.ml",
 			Port:   443,
 			Enable: true,
 			Type: &client.ProxyTypeMtproto{
 				Secret: "7jK5IN_7UWQwKOL2uHjU6sFjZG4uaW50ZXJuZXQub3Jn",
-			},
+			}, */
 		})
 
 		options = append(options, proxy)
