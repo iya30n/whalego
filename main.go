@@ -1,62 +1,37 @@
 package main
 
 import (
-	"encoding/json"
-	// "fmt"
-	"os"
+	"fmt"
 
 	// "whalego/errorHandler"
-	"whalego/errorHandler"
 	"whalego/models/Channel"
 	"whalego/services/telegram/MessageService"
+
+	"github.com/zelenin/go-tdlib/client"
 	// "whalego/database/migration"
 )
 
-func newFile (val []byte) {
-    f, err := os.Create("./result.json")
-    if err != nil {
-        panic(err)
-    }
-
-    defer f.Close()
-
-    f.Write(val)
-
-    f.Sync()
+// type DeepMap map[string][]*DeepMap
+type DeepMap struct {
+	data map[string]DeepMap
 }
 
 func main() {
-    // migration.Migrate()
+	// migration.Migrate()
 
-    channels := Channel.New().All()
+	channels := Channel.New().All()
 
-    for _, channel := range channels {
-        chatId := channel.GetChatId()
+	for _, channel := range channels {
+		chatId := channel.GetChatId()
 
-        messages := MessageService.New().GetMessages(chatId, channel.Last_message_receive)
+		messages := MessageService.New().GetMessages(chatId, channel.Last_message_receive)
 
-       /*  jsonMessages, err := messages.MarshalJSON()
+		for _, message := range messages.Messages {
+			content := message.Content.(*client.MessageText).Text.Entities[0]
 
-        errorHandler.LogFile(err)
+			url := content.Type.(*client.TextEntityTypeTextUrl).Url
 
-        newFile(jsonMessages) */
-
-        marshalMsg, err := messages.MarshalJSON()
-
-        errorHandler.LogFile(err)
-
-        var unmarshalMsg map[string]interface{}
-
-        json.Unmarshal(marshalMsg, &unmarshalMsg)
-
-        print(unmarshalMsg["@type"])
-
-        /* for _, message := range marshalMsg {
-            fmt.Println(message)
-        } */
-
-        /* for _, message := range messages.Messages {
-            fmt.Println(message.Content)
-        }*/
-    }
+			fmt.Println(url)
+		}
+	}
 }
