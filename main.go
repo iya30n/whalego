@@ -26,6 +26,10 @@ func main() {
 
 		messages := MessageService.New().GetMessages(chatId, channel.Last_message_receive)
 
+		if messages.TotalCount == 0 || messages.Messages == nil{
+			continue
+		}
+
 		for _, message := range messages.Messages {
 			content := message.Content.(*client.MessageText).Text.Entities[0]
 
