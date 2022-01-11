@@ -25,9 +25,12 @@ func New() *ProxyService {
 }
 
 func (ps *ProxyService) GetProxies() {
-	// channels := Channel.New().All()
+	/* channels := Channel.New().All()
 
-	/* for _, channel := range channels {
+	for _, channel := range channels {
+		
+		fmt.Println("checking channel " + channel.Username)
+
 		chatId := channel.GetChatId()
 
 		messages := MessageService.New().GetMessages(chatId, channel.Last_message_receive)
@@ -51,10 +54,17 @@ func (ps *ProxyService) GetProxies() {
 				continue;
 			}
 
-			proxyData := getProxyData(proxy)
-			if proxyData == nil {
+			proxyData, ok := ps.getProxyData(proxy)
+			if ok == false {
 				continue
 			}
+
+			ping, isAvailable := ps.checkProxyIsAvailable(proxyData)
+			if isAvailable == false {
+				continue
+			}
+
+			fmt.Println("one proxy saved")
 		}
 	} */
 
