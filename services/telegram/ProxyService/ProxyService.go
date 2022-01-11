@@ -11,8 +11,8 @@ import (
 	"whalego/errorHandler"
 	"whalego/models/Proxy"
 
-	// "whalego/models/Channel"
-	// "whalego/services/telegram/MessageService"
+	"whalego/models/Channel"
+	"whalego/services/telegram/MessageService"
 
 	"github.com/zelenin/go-tdlib/client"
 )
@@ -58,30 +58,31 @@ func (ps *ProxyService) GetProxies() {
 		}
 	} */
 
-	/* channelModel := Channel.New().FindByUsername("proxymtproto")
+	channelModel := Channel.New().FindByUsername("proxymtproto")
 	chatId := channelModel.GetChatId()
-	messages := MessageService.New().GetMessages(chatId, channelModel.Last_message_receive) */
+	messages := MessageService.New().GetMessages(chatId, channelModel.Last_message_receive)
 
-	// for _, message := range messages.Messages {
-	// proxy := ps.buttonMessageHandler(message)
+	for _, message := range messages.Messages {
+		proxy := ps.buttonMessageHandler(message)
 
-	proxy := "https://t.me/proxy?server=23.88.48.140&port=443&secret=DD89c92f4f14e9f5144f7f256b0feed874"
+		// proxy := "https://t.me/proxy?server=23.88.48.140&port=443&secret=DD89c92f4f14e9f5144f7f256b0feed874"
 
-	/* if !ps.isValidProxy(proxy) {
-		continue
-	} */
+		if !ps.isValidProxy(proxy) {
+			continue
+		}
 
-	proxyData := ps.getProxyData(proxy)
-	/* if proxyData == nil {
-		continue
-	} */
+		proxyData, ok := ps.getProxyData(proxy)
+		if ok == false {
+			continue
+		}
 
-	ping, isAvailable := ps.checkProxyIsAvailable(proxyData)
-	/* if isAvailable == false {
-		continue
-	} */
-	fmt.Println(ping, isAvailable)
-	// }
+		ping, isAvailable := ps.checkProxyIsAvailable(proxyData)
+		if isAvailable == false {
+			continue
+		}
+
+		fmt.Println(ping, isAvailable)
+	}
 }
 
 func (ps *ProxyService) textMessageHandler(message *client.Message) string {
@@ -114,23 +115,28 @@ func (ps *ProxyService) isValidProxy(proxy string) bool {
 	return contains
 }
 
-// TODO: our code should not stop the loop
-func (ps *ProxyService) getProxyData(proxy string) Proxy.Proxy {
+func (ps *ProxyService) getProxyData(proxy string) (Proxy.Proxy, bool) {
 	u, err := url.Parse(proxy)
-	errorHandler.LogFile(err)
+	if err != nil {
+		return Proxy.Proxy{}, false
+	}
 
 	values, err := url.ParseQuery(u.RawQuery)
-	errorHandler.LogFile(err)
+	if err != nil {
+		return Proxy.Proxy{}, false
+	}
 
 	port, err := strconv.ParseInt(values.Get("port"), 10, 32)
-	errorHandler.LogFile(err)
+	if err != nil {
+		return Proxy.Proxy{}, false
+	}
 
-	return Proxy.Proxy {
+	return Proxy.Proxy{
 		Link:   proxy,
 		Server: values.Get("server"),
 		Port:   int32(port),
 		Secret: values.Get("secret"),
-	}
+	}, true
 
 	/* return map[string]interface{}{
 		"link":   proxy,
@@ -151,11 +157,11 @@ func (ps *ProxyService) checkProxyIsAvailable(proxy Proxy.Proxy) (string, bool) 
 
 	time := string(out[charindex+5:])
 	ping := time[:4]
-	pingInt, err := strconv.ParseFloat(ping, 10) 
+	pingInt, err := strconv.ParseFloat(ping, 10)
 
 	if pingInt > 450 || err != nil {
 		return "0", false
 	}
 
-	return ping , true
+	return ping, true
 }
