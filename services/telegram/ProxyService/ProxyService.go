@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 	// "whalego/connection"
-	"whalego/errorHandler"
+	// "whalego/errorHandler"
 	"whalego/models/Proxy"
 
 	"whalego/models/Channel"
@@ -85,6 +85,9 @@ func (ps *ProxyService) GetProxies() {
 	}
 }
 
+/**
+* get message url from content key
+*/
 func (ps *ProxyService) textMessageHandler(message *client.Message) string {
 	content := message.Content.(*client.MessageText).Text.Entities[0]
 
@@ -93,6 +96,9 @@ func (ps *ProxyService) textMessageHandler(message *client.Message) string {
 	return url
 }
 
+/**
+* get message url from message button key
+*/
 func (ps *ProxyService) buttonMessageHandler(message *client.Message) string {
 	replyMarkup := message.ReplyMarkup.(*client.ReplyMarkupInlineKeyboard).Rows[0][0]
 
@@ -115,7 +121,11 @@ func (ps *ProxyService) isValidProxy(proxy string) bool {
 	return contains
 }
 
+/**
+* convert proxy url to Proxy model
+*/
 func (ps *ProxyService) getProxyData(proxy string) (Proxy.Proxy, bool) {
+	// get query parameters from proxy url
 	u, err := url.Parse(proxy)
 	if err != nil {
 		return Proxy.Proxy{}, false
@@ -126,6 +136,7 @@ func (ps *ProxyService) getProxyData(proxy string) (Proxy.Proxy, bool) {
 		return Proxy.Proxy{}, false
 	}
 
+	// convert port to int32
 	port, err := strconv.ParseInt(values.Get("port"), 10, 32)
 	if err != nil {
 		return Proxy.Proxy{}, false
@@ -147,14 +158,16 @@ func (ps *ProxyService) getProxyData(proxy string) (Proxy.Proxy, bool) {
 }
 
 func (ps *ProxyService) checkProxyIsAvailable(proxy Proxy.Proxy) (string, bool) {
+	// run a command to get ping of a server
 	out, _ := exec.Command("ping", proxy.Server, "-c 5", "-i 3", "-w 10").Output()
 
+	// check if server is not available
 	if strings.Contains(string(out), "Destination Host Unreachable") {
 		return "0", false
 	}
 
+	// get time= from result
 	charindex := strings.Index(string(out), "time=")
-
 	time := string(out[charindex+5:])
 	ping := time[:4]
 	pingInt, err := strconv.ParseFloat(ping, 10)
