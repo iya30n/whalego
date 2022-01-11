@@ -1,23 +1,12 @@
 package main
 
 import (
-	"os"
-	// "whalego/database/migration"
+	"whalego/database/migration"
+	"whalego/services/telegram/ProxyService"
 )
 
-func newFile (val []byte) {
-    f, err := os.Create("./result.json")
-    if err != nil {
-        panic(err)
-    }
-
-    defer f.Close()
-
-    f.Write(val)
-
-    f.Sync()
-}
-
 func main() {
-    // migration.Migrate()
+	migration.Migrate()
+
+	ProxyService.New().GetProxies()
 }

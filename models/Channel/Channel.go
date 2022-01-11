@@ -13,7 +13,7 @@ type Channel struct {
 	gorm.Model
 	Username             string `gorm: "NOT NULL;size:256"`
 	ChatId               int64  `gorm: "int, unique;"`
-	Last_message_receive int    `gorm: "int;"`
+	Last_message_receive int64  `gorm: "int;"`
 	Handler              string `gorm: "NOT NULL;size:30"`
 }
 
@@ -27,7 +27,7 @@ func (c *Channel) All() []Channel {
 	var channels []Channel
 
 	db.Find(&channels)
-	
+
 	return channels
 }
 
@@ -62,14 +62,14 @@ func (c *Channel) GetChatId() int64 {
 
 	chat, err := ChatService.New().GetChatId(c.Username)
 
-	 if err.Error() == "USERNAME_NOT_OCCUPIED" && chat == nil {
+	if err != nil && err.Error() == "USERNAME_NOT_OCCUPIED" && chat == nil {
 		c.Delete()
 		os.Exit(1)
 	}
 
 	errorHandler.LogFile(err)
 
-	c.Update(map[string]interface{} {
+	c.Update(map[string]interface{}{
 		"chat_id": chat.Id,
 	})
 

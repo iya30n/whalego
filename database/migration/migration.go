@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"whalego/database"
 	"whalego/models/Channel"
+	"whalego/models/Proxy"
 )
 
 func Migrate() {
@@ -11,6 +12,7 @@ func Migrate() {
 
 	models := map[string]interface{} {
 		"Channel": Channel.New(),
+		"Proxy": Proxy.New(),
 	}
 
 	for name, model := range models {
