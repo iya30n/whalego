@@ -1,11 +1,12 @@
 package main
 
-import "whalego/services/telegram/ProxyService"
-
-// "whalego/database/migration"
+import (
+	"whalego/database/migration"
+	"whalego/services/telegram/ProxyService"
+)
 
 func main() {
-	// migration.Migrate()
+	migration.Migrate()
 
 	ProxyService.New().GetProxies()
 }

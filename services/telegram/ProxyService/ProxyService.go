@@ -64,6 +64,10 @@ func (ps *ProxyService) GetProxies() {
 				continue
 			}
 
+			proxyData.Ping = ping
+
+			proxyData.Save()
+
 			fmt.Println("one proxy saved")
 		}
 	} */
@@ -91,7 +95,9 @@ func (ps *ProxyService) GetProxies() {
 			continue
 		}
 
-		fmt.Println(ping, isAvailable)
+		proxyData.Ping = ping
+
+		proxyData.Save()
 	}
 }
 
@@ -153,15 +159,15 @@ func (ps *ProxyService) getProxyData(proxy string) (Proxy.Proxy, bool) {
 	}
 
 	return Proxy.Proxy{
-		Link:   proxy,
-		Server: values.Get("server"),
+		Url:   proxy,
+		Address: values.Get("server"),
 		Port:   int32(port),
 		Secret: values.Get("secret"),
 	}, true
 
 	/* return map[string]interface{}{
-		"link":   proxy,
-		"server": values.Get("server"),
+		"url":   proxy,
+		"address": values.Get("server"),
 		"port":   int32(port),
 		"secret": values.Get("secret"),
 	} */
@@ -169,7 +175,7 @@ func (ps *ProxyService) getProxyData(proxy string) (Proxy.Proxy, bool) {
 
 func (ps *ProxyService) checkProxyIsAvailable(proxy Proxy.Proxy) (string, bool) {
 	// run a command to get ping of a server
-	out, _ := exec.Command("ping", proxy.Server, "-c 5", "-i 3", "-w 10").Output()
+	out, _ := exec.Command("ping", proxy.Address, "-c 5", "-i 3", "-w 10").Output()
 
 	// check if server is not available
 	if strings.Contains(string(out), "Destination Host Unreachable") {
