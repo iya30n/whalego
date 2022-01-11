@@ -169,7 +169,7 @@ func (ps *ProxyService) checkProxyIsAvailable(proxy Proxy.Proxy) (string, bool) 
 	// get time= from result
 	charindex := strings.Index(string(out), "time=")
 	time := string(out[charindex+5:])
-	ping := time[:4]
+	ping := strings.TrimSpace(time[:4])
 	pingInt, err := strconv.ParseFloat(ping, 10)
 
 	if pingInt > 450 || err != nil {
