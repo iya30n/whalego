@@ -4,9 +4,10 @@ import (
 	// "errors"
 	"fmt"
 	"net/url"
+	"os/exec"
 	"strconv"
 	"strings"
-	"whalego/connection"
+	// "whalego/connection"
 	"whalego/errorHandler"
 	"whalego/models/Proxy"
 
@@ -75,7 +76,11 @@ func (ps *ProxyService) GetProxies() {
 		continue
 	} */
 
-	ps.checkProxyIsAvailable(proxyData)
+	ping, isAvailable := ps.checkProxyIsAvailable(proxyData)
+	/* if isAvailable == false {
+		continue
+	} */
+	fmt.Println(ping, isAvailable)
 	// }
 }
 
@@ -109,6 +114,7 @@ func (ps *ProxyService) isValidProxy(proxy string) bool {
 	return contains
 }
 
+// TODO: our code should not stop the loop
 func (ps *ProxyService) getProxyData(proxy string) Proxy.Proxy {
 	u, err := url.Parse(proxy)
 	errorHandler.LogFile(err)
@@ -134,21 +140,22 @@ func (ps *ProxyService) getProxyData(proxy string) Proxy.Proxy {
 	} */
 }
 
-func (ps *ProxyService) checkProxyIsAvailable(proxy Proxy.Proxy) {
-	ok, err := connection.TdConnection(true).TestProxy(&client.TestProxyRequest{
-		Server: proxy.Server,
-		Port:   proxy.Port,
-		Type: &client.ProxyTypeMtproto{
-			Secret: proxy.Secret,
-		},
-		Timeout: 12000000000,
-	})
+func (ps *ProxyService) checkProxyIsAvailable(proxy Proxy.Proxy) (string, bool) {
+	out, _ := exec.Command("ping", proxy.Server, "-c 5", "-i 3", "-w 10").Output()
 
-	/* connection.TdConnection(false).PingProxy(&client.PingProxyRequest{
-		ProxyId: ,
-	}) */
+	if strings.Contains(string(out), "Destination Host Unreachable") {
+		return "0", false
+	}
 
-	errorHandler.LogFile(err)
+	charindex := strings.Index(string(out), "time=")
 
-	fmt.Println(ok)
+	time := string(out[charindex+5:])
+	ping := time[:4]
+	pingInt, err := strconv.ParseFloat(ping, 10) 
+
+	if pingInt > 450 || err != nil {
+		return "0", false
+	}
+
+	return ping , true
 }
