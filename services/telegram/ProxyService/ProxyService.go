@@ -24,62 +24,27 @@ func New() *ProxyService {
 	return &ProxyService{}
 }
 
-func (ps *ProxyService) GetProxies() {
-	/* channels := Channel.New().All()
+func (ps *ProxyService) GetProxies(channel *Channel.Channel) {
+	fmt.Println("checking channel " + channel.Username)
 
-	for _, channel := range channels {
-		
-		fmt.Println("checking channel " + channel.Username)
+	chatId := channel.GetChatId()
 
-		chatId := channel.GetChatId()
+	messages := MessageService.New().GetMessages(chatId, channel.Last_message_receive)
 
-		messages := MessageService.New().GetMessages(chatId, channel.Last_message_receive)
-
-		if messages.TotalCount == 0 || messages.Messages == nil{
-			continue
-		}
-
-		for _, message := range messages.Messages {
-			var proxy string
-
-			if channel.Handler == "text" {
-				proxy = ps.textMessageHandler(message)
-			}
-
-			if channel.Handler == "button" {
-				proxy = ps.buttonMessageHandler(message)
-			}
-
-			if !ps.isValidProxy(proxy) {
-				continue;
-			}
-
-			proxyData, ok := ps.getProxyData(proxy)
-			if ok == false {
-				continue
-			}
-
-			ping, isAvailable := ps.checkProxyIsAvailable(proxyData)
-			if isAvailable == false {
-				continue
-			}
-
-			proxyData.Ping = ping
-
-			proxyData.Save()
-
-			fmt.Println("one proxy saved")
-		}
-	} */
-
-	channelModel := Channel.New().FindByUsername("proxymtproto")
-	chatId := channelModel.GetChatId()
-	messages := MessageService.New().GetMessages(chatId, channelModel.Last_message_receive)
+	if messages.TotalCount == 0 || messages.Messages == nil {
+		return
+	}
 
 	for _, message := range messages.Messages {
-		proxy := ps.buttonMessageHandler(message)
+		var proxy string
 
-		// proxy := "https://t.me/proxy?server=23.88.48.140&port=443&secret=DD89c92f4f14e9f5144f7f256b0feed874"
+		if channel.Handler == "text" {
+			proxy = ps.textMessageHandler(message)
+		}
+
+		if channel.Handler == "button" {
+			proxy = ps.buttonMessageHandler(message)
+		}
 
 		if !ps.isValidProxy(proxy) {
 			continue
@@ -87,6 +52,10 @@ func (ps *ProxyService) GetProxies() {
 
 		proxyData, ok := ps.getProxyData(proxy)
 		if ok == false {
+			continue
+		}
+
+		if proxyData.Exists() == true {
 			continue
 		}
 
@@ -98,12 +67,14 @@ func (ps *ProxyService) GetProxies() {
 		proxyData.Ping = ping
 
 		proxyData.Save()
+
+		fmt.Println("one proxy saved")
 	}
 }
 
 /**
 * get message url from content key
-*/
+ */
 func (ps *ProxyService) textMessageHandler(message *client.Message) string {
 	content := message.Content.(*client.MessageText).Text.Entities[0]
 
@@ -114,7 +85,7 @@ func (ps *ProxyService) textMessageHandler(message *client.Message) string {
 
 /**
 * get message url from message button key
-*/
+ */
 func (ps *ProxyService) buttonMessageHandler(message *client.Message) string {
 	replyMarkup := message.ReplyMarkup.(*client.ReplyMarkupInlineKeyboard).Rows[0][0]
 
@@ -139,7 +110,7 @@ func (ps *ProxyService) isValidProxy(proxy string) bool {
 
 /**
 * convert proxy url to Proxy model
-*/
+ */
 func (ps *ProxyService) getProxyData(proxy string) (Proxy.Proxy, bool) {
 	// get query parameters from proxy url
 	u, err := url.Parse(proxy)
@@ -159,10 +130,10 @@ func (ps *ProxyService) getProxyData(proxy string) (Proxy.Proxy, bool) {
 	}
 
 	return Proxy.Proxy{
-		Url:   proxy,
+		Url:     proxy,
 		Address: values.Get("server"),
-		Port:   int32(port),
-		Secret: values.Get("secret"),
+		Port:    int32(port),
+		Secret:  values.Get("secret"),
 	}, true
 
 	/* return map[string]interface{}{
@@ -178,7 +149,7 @@ func (ps *ProxyService) checkProxyIsAvailable(proxy Proxy.Proxy) (string, bool) 
 	out, _ := exec.Command("ping", proxy.Address, "-c 5", "-i 3", "-w 10").Output()
 
 	// check if server is not available
-	if strings.Contains(string(out), "Destination Host Unreachable") {
+	if strings.Contains(string(out), "Destination Host Unreachable") || string(out) == "" {
 		return "0", false
 	}
 

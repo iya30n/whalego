@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"whalego/database/migration"
+	// "whalego/connection"
+	"whalego/models/Channel"
 	"whalego/services/telegram/ProxyService"
 )
 
@@ -19,7 +21,16 @@ func main() {
 	}
 
 	if os.Args[1] == "proxy:crawler" {
-		migration.Migrate()
-		ProxyService.New().GetProxies()
+		channels := Channel.New()
+		for _, channel := range channels.All() {
+			ProxyService.New().GetProxies(&channel)
+		}
+
+		os.Exit(1)
+	}
+
+	if os.Args[1] == "proxy:send" {
+		// TODO: send proxy
+		os.Exit(1)
 	}
 }
