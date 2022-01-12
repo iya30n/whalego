@@ -21,6 +21,16 @@ func New() *Proxy {
 	return &Proxy{}
 }
 
+func (p *Proxy) GetLimit(limit int) []Proxy{
+	db := database.Connect()
+
+	var proxies []Proxy
+
+	db.Limit(limit).Find(&proxies)
+
+	return proxies
+}
+
 func (p *Proxy) Create(data map[string]interface{}) {
 	db := database.Connect()
 
