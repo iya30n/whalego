@@ -7,7 +7,19 @@ import (
 	"github.com/zelenin/go-tdlib/client"
 )
 
-func TdConnection(withProxy bool) *client.Client {
+var (
+	hasSet bool = false
+	singletonConnection *client.Client
+)
+
+func init() {
+	if hasSet == false {
+		hasSet = true
+		singletonConnection = makeConnection(true)
+	}
+}
+
+func makeConnection(withProxy bool) *client.Client {
 	authorizer := client.ClientAuthorizer()
 	go client.CliInteractor(authorizer)
 
@@ -21,8 +33,8 @@ func TdConnection(withProxy bool) *client.Client {
 		DatabaseDirectory:      filepath.Join(".tdlib", "database"),
 		FilesDirectory:         filepath.Join(".tdlib", "files"),
 		UseFileDatabase:        true,
-		UseChatInfoDatabase:    true,
-		UseMessageDatabase:     true,
+		UseChatInfoDatabase:    false,
+		UseMessageDatabase:     false,
 		UseSecretChats:         false,
 		ApiId:                  apiId,
 		ApiHash:                apiHash,
@@ -44,19 +56,19 @@ func TdConnection(withProxy bool) *client.Client {
 
 	if withProxy == true {
 		proxy := client.WithProxy(&client.AddProxyRequest{
-			Server: "127.0.0.1",
+			/* Server: "127.0.0.1",
 			Port:   9050,
 			Enable: true,
 			Type: &client.ProxyTypeSocks5{
 				Username: "",
 				Password: "",
-			},
-			/* Server: "trichiasis.www.Bmi.ir.Bmi--ir.ml",
+			}, */
+			Server: "tunicle.www.Bmi.ir.Bmi--ir.ml",
 			Port:   443,
 			Enable: true,
 			Type: &client.ProxyTypeMtproto{
 				Secret: "7jK5IN_7UWQwKOL2uHjU6sFjZG4uaW50ZXJuZXQub3Jn",
-			}, */
+			},
 		})
 
 		options = append(options, proxy)
@@ -67,4 +79,12 @@ func TdConnection(withProxy bool) *client.Client {
 	errorHandler.LogFile(err)
 
 	return tdlibClient
+}
+
+func TdConnection(withProxy bool) *client.Client {
+	if hasSet == true {
+		return singletonConnection
+	} else {
+		return makeConnection(withProxy)
+	}
 }
