@@ -7,11 +7,14 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+
 	// "whalego/connection"
 	// "whalego/errorHandler"
+	"whalego/errorHandler"
 	"whalego/models/Proxy"
 
 	"whalego/models/Channel"
+	"whalego/services/telegram/ChatService"
 	"whalego/services/telegram/MessageService"
 
 	"github.com/zelenin/go-tdlib/client"
@@ -70,6 +73,30 @@ func (ps *ProxyService) GetProxies(channel *Channel.Channel) {
 
 		fmt.Println("one proxy saved")
 	}
+}
+
+func (ps *ProxyService) SendProxy() {
+	chatId, err := ChatService.New().GetChatId("whale_test")
+
+	errorHandler.LogFile(err)
+
+	var availableProxy Proxy.Proxy
+
+	for _, p := range Proxy.New().GetLimit(5) {
+		if _, ok := ps.checkProxyIsAvailable(p); ok == true {
+			availableProxy = p
+			break
+		}
+	}
+
+	proxyMessage := "server: "+availableProxy.Address+"\nport: %d\nping: **"+availableProxy.Ping+"**\n\n ▶️[ Connect ]("+availableProxy.Url+")◀️\n➖➖➖➖➖➖➖➖➖➖\n🔽**پروکسی های بیشتر**🔽\n🆔 @whaleproxies"
+	proxyMessage = fmt.Sprintf(proxyMessage, availableProxy.Port)
+
+	// proxyMessage := "server: %d \nport: %d\nping: **%d**\n\n [▶️   Connect   ◀️](%d) \n➖➖➖➖➖➖➖➖➖➖\n🔽**پروکسی های بیشتر**🔽\n🆔 @whaleproxies"
+	// proxyMessage := "server: `%d` \nport: `%d`\nping: **`%d`**\n\n [▶️   Connect   ◀️](`%d`) \n➖➖➖➖➖➖➖➖➖➖\n🔽**پروکسی های بیشتر**🔽\n🆔 @whaleproxies"
+	// proxyMessage = fmt.Sprint(proxyMessage, availableProxy.Address, availableProxy.Port, availableProxy.Ping, availableProxy.Url)
+
+	MessageService.New().SendMarkdown(chatId.Id, proxyMessage)
 }
 
 /**
