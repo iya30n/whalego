@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"whalego/database/migration"
-	// "whalego/connection"
 	"whalego/models/Channel"
 	"whalego/services/telegram/ProxyService"
 )
@@ -30,7 +29,7 @@ func main() {
 	}
 
 	if os.Args[1] == "proxy:send" {
-		// TODO: send proxy
+		ProxyService.New().SendProxy()
 		os.Exit(1)
 	}
 }
