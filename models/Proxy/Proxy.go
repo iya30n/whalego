@@ -38,3 +38,12 @@ func (p *Proxy) Save() {
 
 	db.Create(&p)
 }
+
+func (p *Proxy) Exists() bool {
+	db := database.Connect()
+
+	var proxies []Proxy
+	db.Where("address = ?", p.Address).Find(&proxies)
+
+	return len(proxies) > 0
+}
