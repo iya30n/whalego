@@ -24,6 +24,8 @@ func New() *Proxy {
 func (p *Proxy) GetLimit(limit int) []Proxy{
 	db := database.Connect()
 
+	defer database.Close(db)
+
 	var proxies []Proxy
 
 	db.Limit(limit).Find(&proxies)
@@ -33,6 +35,8 @@ func (p *Proxy) GetLimit(limit int) []Proxy{
 
 func (p *Proxy) Create(data map[string]interface{}) {
 	db := database.Connect()
+
+	defer database.Close(db)
 
 	if _, ok := data["in_channel"]; ok == false {
 		data["in_channel"] = false
@@ -44,6 +48,8 @@ func (p *Proxy) Create(data map[string]interface{}) {
 func (p *Proxy) Save() {
 	db := database.Connect()
 
+	defer database.Close(db)
+
 	p.InChannel = false
 
 	db.Create(&p)
@@ -51,6 +57,8 @@ func (p *Proxy) Save() {
 
 func (p *Proxy) Exists() bool {
 	db := database.Connect()
+
+	defer database.Close(db)
 
 	var proxies []Proxy
 	db.Where("address = ?", p.Address).Find(&proxies)

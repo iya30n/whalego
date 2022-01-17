@@ -15,3 +15,11 @@ func Connect() *gorm.DB {
 
 	return db
 }
+
+func Close(connection *gorm.DB) {
+	dbC, err := connection.DB()
+
+	errorHandler.LogFile(err)
+
+	dbC.Close()
+}

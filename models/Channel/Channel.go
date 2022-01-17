@@ -24,6 +24,8 @@ func New() *Channel {
 func (c *Channel) All() []Channel {
 	db := database.Connect()
 
+	defer database.Close(db)
+
 	var channels []Channel
 
 	db.Find(&channels)
@@ -33,6 +35,8 @@ func (c *Channel) All() []Channel {
 
 func (c *Channel) FindByUsername(username string) *Channel {
 	db := database.Connect()
+
+	defer database.Close(db)
 
 	db.Find(&c, "username = ?", username)
 
@@ -46,11 +50,15 @@ func (c *Channel) FindByUsername(username string) *Channel {
 func (c *Channel) Update(data map[string]interface{}) {
 	db := database.Connect()
 
+	defer database.Close(db)
+
 	db.Model(&c).Updates(data)
 }
 
 func (c *Channel) Delete() {
 	db := database.Connect()
+
+	defer database.Close(db)
 
 	db.Unscoped().Delete(&c)
 }
