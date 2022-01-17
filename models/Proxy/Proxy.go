@@ -109,3 +109,11 @@ func (p *Proxy) Delete() {
 
 	db.Unscoped().Delete(&p)
 }
+
+func (p *Proxy) DeleteMany(proxies []Proxy) {
+	db := database.Connect()
+
+	defer database.Close(db)
+
+	db.Unscoped().Delete(proxies)
+}
