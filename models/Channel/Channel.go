@@ -70,7 +70,7 @@ func (c *Channel) GetChatId() int64 {
 
 	chat, err := ChatService.New().GetChatId(c.Username)
 
-	if err != nil && err.Error() == "USERNAME_NOT_OCCUPIED" && chat == nil {
+	if err != nil && err.Error() == "USERNAME_NOT_OCCUPIED" || chat == nil {
 		c.Delete()
 		
 		return 0
