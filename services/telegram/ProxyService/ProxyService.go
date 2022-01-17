@@ -92,10 +92,6 @@ func (ps *ProxyService) SendProxy() {
 		}
 	}
 
-	availableProxy.Update(map[string]interface{}{
-		"in_channel": true,
-	})
-
 	proxyMessage := "server: "+availableProxy.Address+"\nport: %d\nping: **"+availableProxy.Ping+"**\n\n ▶️[ Connect ]("+availableProxy.Url+")◀️\n➖➖➖➖➖➖➖➖➖➖\n🔽**پروکسی های بیشتر**🔽\n🆔 @whaleproxies"
 	proxyMessage = fmt.Sprintf(proxyMessage, availableProxy.Port)
 
@@ -103,7 +99,39 @@ func (ps *ProxyService) SendProxy() {
 	// proxyMessage := "server: `%d` \nport: `%d`\nping: **`%d`**\n\n [▶️   Connect   ◀️](`%d`) \n➖➖➖➖➖➖➖➖➖➖\n🔽**پروکسی های بیشتر**🔽\n🆔 @whaleproxies"
 	// proxyMessage = fmt.Sprint(proxyMessage, availableProxy.Address, availableProxy.Port, availableProxy.Ping, availableProxy.Url)
 
-	MessageService.New().SendMarkdown(chatId.Id, proxyMessage)
+	sentMessage := MessageService.New().SendMarkdown(chatId.Id, proxyMessage)
+
+	availableProxy.Update(map[string]interface{}{
+		"in_channel": true,
+		"channel_message_id": sentMessage.Id,
+	})
+}
+
+func (ps *ProxyService) CheckAllProxies() {
+	chatId, err := ChatService.New().GetChatId("whaleproxies")
+	errorHandler.LogFile(err)
+
+	deleteProxies := []Proxy.Proxy{}
+
+	deleteMessages := []int64{}
+
+	for _, proxy := range Proxy.New().All() {
+		ping, isAvailable := ps.checkProxyIsAvailable(proxy)
+		if isAvailable {
+			proxy.Ping = ping
+			proxy.Save()
+
+			continue
+		}
+
+		deleteMessages = append(deleteMessages, proxy.ChannelMessageId)
+
+		deleteProxies = append(deleteProxies, proxy)
+	}
+
+	MessageService.New().DeleteMessages(chatId.Id, deleteMessages)
+
+	Proxy.New().DeleteMany(deleteProxies)
 }
 
 /**

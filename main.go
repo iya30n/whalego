@@ -32,4 +32,9 @@ func main() {
 		ProxyService.New().SendProxy()
 		os.Exit(1)
 	}
+
+	if os.Args[1] == "proxy:check" {
+		ProxyService.New().CheckAllProxies()
+		os.Exit(1)
+	}
 }
