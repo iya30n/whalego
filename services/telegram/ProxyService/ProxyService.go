@@ -31,6 +31,9 @@ func (ps *ProxyService) GetProxies(channel *Channel.Channel) {
 	fmt.Println("checking channel " + channel.Username)
 
 	chatId := channel.GetChatId()
+	if chatId == 0 {
+		return
+	}
 
 	messages := MessageService.New().GetMessages(chatId, channel.Last_message_receive)
 

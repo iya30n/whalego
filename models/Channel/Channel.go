@@ -72,7 +72,8 @@ func (c *Channel) GetChatId() int64 {
 
 	if err != nil && err.Error() == "USERNAME_NOT_OCCUPIED" && chat == nil {
 		c.Delete()
-		os.Exit(1)
+		
+		return 0
 	}
 
 	errorHandler.LogFile(err)
