@@ -1,7 +1,6 @@
 package Channel
 
 import (
-	"os"
 	"whalego/database"
 	"whalego/errorHandler"
 	"whalego/services/telegram/ChatService"
