@@ -89,3 +89,11 @@ func (p *Proxy) Exists() bool {
 
 	return len(proxies) > 0
 }
+
+func (p *Proxy) Delete() {
+	db := database.Connect()
+
+	defer database.Close(db)
+
+	db.Unscoped().Delete(&p)
+}
