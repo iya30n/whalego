@@ -36,7 +36,7 @@ func makeConnection(withProxy bool) *client.Client {
 		UseTestDc:              false,
 		DatabaseDirectory:      filepath.Join(".tdlib", "database"),
 		FilesDirectory:         filepath.Join(".tdlib", "files"),
-		UseFileDatabase:        false,
+		UseFileDatabase:        true,
 		UseChatInfoDatabase:    false,
 		UseMessageDatabase:     false,
 		UseSecretChats:         false,
