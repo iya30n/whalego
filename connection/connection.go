@@ -51,7 +51,7 @@ func makeConnection(withProxy bool) *client.Client {
 	}
 
 	logVerbosity := client.WithLogVerbosity(&client.SetLogVerbosityLevelRequest{
-		NewVerbosityLevel: 4,
+		NewVerbosityLevel: 0,
 	})
 
 	options := []client.Option{
