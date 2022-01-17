@@ -124,7 +124,9 @@ func (ps *ProxyService) CheckAllProxies() {
 			continue
 		}
 
-		deleteMessages = append(deleteMessages, proxy.ChannelMessageId)
+		if proxy.ChannelMessageId != 0 {
+			deleteMessages = append(deleteMessages, proxy.ChannelMessageId)
+		}
 
 		deleteProxies = append(deleteProxies, proxy)
 	}
