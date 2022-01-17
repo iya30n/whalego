@@ -67,11 +67,11 @@ func makeConnection(withProxy bool) *client.Client {
 				Username: "",
 				Password: "",
 			}, */
-			Server: "174.138.3.177",
+			Server: "www.cloudflare.tattoo",
 			Port:   443,
 			Enable: true,
 			Type: &client.ProxyTypeMtproto{
-				Secret: "dd8d6ab375709ab8f2a18d5602df229602",
+				Secret: "dd00000000000000000000000000000000",
 			},
 		})
 
