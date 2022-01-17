@@ -73,6 +73,10 @@ func (cs *MessageService) SendMarkdown(chatId int64, message string) *client.Mes
 }
 
 func (cs *MessageService) DeleteMessages(chatId int64, messageIds []int64) {
+	if len(messageIds) < 1 {
+		return
+	}
+
 	_, err := cs.tgConnection.DeleteMessages(&client.DeleteMessagesRequest{
 		ChatId: chatId,
 		MessageIds: messageIds,
