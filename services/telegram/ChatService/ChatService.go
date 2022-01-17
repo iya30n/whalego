@@ -17,6 +17,7 @@ func New() *ChatService {
 }
 
 func (cs *ChatService) GetChatId(username string) (*client.Chat, error) {
+	defer connection.Close(cs.tgConnection)
 	return cs.tgConnection.SearchPublicChat(&client.SearchPublicChatRequest{
 		Username: username,
 	})
