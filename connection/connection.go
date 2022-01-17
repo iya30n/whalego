@@ -7,15 +7,19 @@ import (
 	"github.com/zelenin/go-tdlib/client"
 )
 
-var (
-	hasSet bool = false
-	singletonConnection *client.Client
-)
+var singletonConnection *client.Client
+var isset bool = false
 
 func init() {
-	if hasSet == false {
-		hasSet = true
-		singletonConnection = makeConnection(true)
+	singletonConnection = TdConnection(true)
+	isset = true
+}
+
+func TdConnection(withProxy bool) *client.Client {
+	if isset {
+		return singletonConnection
+	} else {
+		return makeConnection(withProxy)
 	}
 }
 
@@ -32,7 +36,7 @@ func makeConnection(withProxy bool) *client.Client {
 		UseTestDc:              false,
 		DatabaseDirectory:      filepath.Join(".tdlib", "database"),
 		FilesDirectory:         filepath.Join(".tdlib", "files"),
-		UseFileDatabase:        true,
+		UseFileDatabase:        false,
 		UseChatInfoDatabase:    false,
 		UseMessageDatabase:     false,
 		UseSecretChats:         false,
@@ -42,19 +46,19 @@ func makeConnection(withProxy bool) *client.Client {
 		DeviceModel:            "Server",
 		SystemVersion:          "1.0.0",
 		ApplicationVersion:     "1.0.0",
-		EnableStorageOptimizer: true,
+		EnableStorageOptimizer: false,
 		IgnoreFileNames:        false,
 	}
 
 	logVerbosity := client.WithLogVerbosity(&client.SetLogVerbosityLevelRequest{
-		NewVerbosityLevel: 0,
+		NewVerbosityLevel: 4,
 	})
 
 	options := []client.Option{
 		logVerbosity,
 	}
 
-	if withProxy == true {
+	if withProxy {
 		proxy := client.WithProxy(&client.AddProxyRequest{
 			/* Server: "127.0.0.1",
 			Port:   9050,
@@ -63,11 +67,11 @@ func makeConnection(withProxy bool) *client.Client {
 				Username: "",
 				Password: "",
 			}, */
-			Server: "tunicle.www.Bmi.ir.Bmi--ir.ml",
+			Server: "174.138.3.177",
 			Port:   443,
 			Enable: true,
 			Type: &client.ProxyTypeMtproto{
-				Secret: "7jK5IN_7UWQwKOL2uHjU6sFjZG4uaW50ZXJuZXQub3Jn",
+				Secret: "dd8d6ab375709ab8f2a18d5602df229602",
 			},
 		})
 
@@ -81,10 +85,8 @@ func makeConnection(withProxy bool) *client.Client {
 	return tdlibClient
 }
 
-func TdConnection(withProxy bool) *client.Client {
-	if hasSet == true {
-		return singletonConnection
-	} else {
-		return makeConnection(withProxy)
-	}
+func Close(connection *client.Client) {
+	isset = false
+
+	connection.Close()
 }
