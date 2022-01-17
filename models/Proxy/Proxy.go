@@ -21,6 +21,18 @@ func New() *Proxy {
 	return &Proxy{}
 }
 
+func (p *Proxy) All() []Proxy{
+	db := database.Connect()
+
+	defer database.Close(db)
+
+	var proxies []Proxy
+
+	db.Find(&proxies)
+
+	return proxies
+}
+
 func (p *Proxy) GetLimit(limit int) []Proxy{
 	db := database.Connect()
 
