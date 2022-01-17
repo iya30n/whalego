@@ -71,3 +71,13 @@ func (cs *MessageService) SendMarkdown(chatId int64, message string) *client.Mes
 
 	return msg
 }
+
+func (cs *MessageService) DeleteMessages(chatId int64, messageIds []int64) {
+	_, err := cs.tgConnection.DeleteMessages(&client.DeleteMessagesRequest{
+		ChatId: chatId,
+		MessageIds: messageIds,
+		Revoke: true,
+	})
+
+	errorHandler.LogFile(err)
+}
