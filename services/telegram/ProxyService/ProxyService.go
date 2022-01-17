@@ -10,6 +10,7 @@ import (
 
 	// "whalego/connection"
 	// "whalego/errorHandler"
+	"whalego/Config"
 	"whalego/errorHandler"
 	"whalego/models/Proxy"
 
@@ -79,7 +80,8 @@ func (ps *ProxyService) GetProxies(channel *Channel.Channel) {
 }
 
 func (ps *ProxyService) SendProxy() {
-	chatId, err := ChatService.New().GetChatId("whale_test")
+	whaleChannelUsername := Config.Telegram["whale_channel"]
+	chatId, err := ChatService.New().GetChatId(whaleChannelUsername)
 
 	errorHandler.LogFile(err)
 
@@ -108,7 +110,9 @@ func (ps *ProxyService) SendProxy() {
 }
 
 func (ps *ProxyService) CheckAllProxies() {
-	chatId, err := ChatService.New().GetChatId("whaleproxies")
+	whaleChannelUsername := Config.Telegram["whale_channel"]
+	
+	chatId, err := ChatService.New().GetChatId(whaleChannelUsername)
 	errorHandler.LogFile(err)
 
 	deleteProxies := []Proxy.Proxy{}
