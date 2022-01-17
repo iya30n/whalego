@@ -1,7 +1,6 @@
 package Channel
 
 import (
-	"os"
 	"whalego/database"
 	"whalego/errorHandler"
 	"whalego/services/telegram/ChatService"
@@ -24,6 +23,8 @@ func New() *Channel {
 func (c *Channel) All() []Channel {
 	db := database.Connect()
 
+	defer database.Close(db)
+
 	var channels []Channel
 
 	db.Find(&channels)
@@ -33,6 +34,8 @@ func (c *Channel) All() []Channel {
 
 func (c *Channel) FindByUsername(username string) *Channel {
 	db := database.Connect()
+
+	defer database.Close(db)
 
 	db.Find(&c, "username = ?", username)
 
@@ -46,32 +49,37 @@ func (c *Channel) FindByUsername(username string) *Channel {
 func (c *Channel) Update(data map[string]interface{}) {
 	db := database.Connect()
 
+	defer database.Close(db)
+
 	db.Model(&c).Updates(data)
 }
 
 func (c *Channel) Delete() {
 	db := database.Connect()
 
+	defer database.Close(db)
+
 	db.Unscoped().Delete(&c)
 }
 
 func (c *Channel) GetChatId() int64 {
-	if c.ChatId != 0 {
+	/* if c.ChatId != 0 {
 		return c.ChatId
-	}
+	} */
 
 	chat, err := ChatService.New().GetChatId(c.Username)
 
-	if err != nil && err.Error() == "USERNAME_NOT_OCCUPIED" && chat == nil {
+	if err != nil && err.Error() == "USERNAME_NOT_OCCUPIED" || chat == nil {
 		c.Delete()
-		os.Exit(1)
+		
+		return 0
 	}
 
 	errorHandler.LogFile(err)
 
-	c.Update(map[string]interface{}{
+	/* c.Update(map[string]interface{}{
 		"chat_id": chat.Id,
-	})
+	}) */
 
 	return chat.Id
 }

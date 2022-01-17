@@ -42,3 +42,46 @@ func (cs *MessageService) SendMessage(chatId int64, message client.InputMessageC
 
 	return msg
 }
+
+func (cs *MessageService) SendMarkdown(chatId int64, message string) *client.Message {
+	mdMsg, err := cs.tgConnection.ParseMarkdown(&client.ParseMarkdownRequest{
+		Text: &client.FormattedText{
+			Text: message,
+		},
+	})
+
+	/* mdMsg, err := cs.tgConnection.ParseTextEntities(&client.ParseTextEntitiesRequest{
+		// Text: "*bold* _italic_ `code`",
+		Text: message,
+		ParseMode: &client.TextParseModeMarkdown{
+			Version: 1,
+		},
+	}) */
+
+	errorHandler.LogFile(err)
+
+	msg, err := cs.tgConnection.SendMessage(&client.SendMessageRequest{
+        ChatId: chatId,
+        InputMessageContent: &client.InputMessageText{
+			Text: mdMsg,
+		},
+    })
+
+	errorHandler.LogFile(err)
+
+	return msg
+}
+
+func (cs *MessageService) DeleteMessages(chatId int64, messageIds []int64) {
+	if len(messageIds) < 1 {
+		return
+	}
+
+	_, err := cs.tgConnection.DeleteMessages(&client.DeleteMessagesRequest{
+		ChatId: chatId,
+		MessageIds: messageIds,
+		Revoke: true,
+	})
+
+	errorHandler.LogFile(err)
+}
