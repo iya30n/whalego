@@ -15,7 +15,7 @@ func Connect() *gorm.DB {
 	username := Config.Database["USERNAME"]
 	pass := Config.Database["PASS"]
 
-	dsn := username + ":" + pass + "@tcp(" + host + ":3306" + port + ")/" + dbName + "?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := username + ":" + pass + "@tcp(" + host + ":" + port + ")/" + dbName + "?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	errorHandler.LogFile(err)
