@@ -85,12 +85,16 @@ func (ps *ProxyService) SendProxy() {
 
 	var availableProxy Proxy.Proxy
 
-	for _, p := range Proxy.New().GetLimit(5) {
+	for _, p := range Proxy.New().GetNotInChannel(5) {
 		if _, ok := ps.checkProxyIsAvailable(p); ok == true {
 			availableProxy = p
 			break
 		}
 	}
+
+	availableProxy.Update(map[string]interface{}{
+		"in_channel": true,
+	})
 
 	proxyMessage := "server: "+availableProxy.Address+"\nport: %d\nping: **"+availableProxy.Ping+"**\n\n ▶️[ Connect ]("+availableProxy.Url+")◀️\n➖➖➖➖➖➖➖➖➖➖\n🔽**پروکسی های بیشتر**🔽\n🆔 @whaleproxies"
 	proxyMessage = fmt.Sprintf(proxyMessage, availableProxy.Port)

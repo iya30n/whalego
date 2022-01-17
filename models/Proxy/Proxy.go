@@ -33,6 +33,18 @@ func (p *Proxy) GetLimit(limit int) []Proxy{
 	return proxies
 }
 
+func (p *Proxy) GetNotInChannel(limit int) []Proxy{
+	db := database.Connect()
+
+	defer database.Close(db)
+
+	var proxies []Proxy
+
+	db.Where("in_channel = ?", false).Limit(limit).Find(&proxies)
+
+	return proxies
+}
+
 func (p *Proxy) Create(data map[string]interface{}) {
 	db := database.Connect()
 
@@ -43,6 +55,18 @@ func (p *Proxy) Create(data map[string]interface{}) {
 	}
 
 	db.Model(&p).Create(data)
+}
+
+func (p *Proxy) Update(data map[string]interface{}) {
+	db := database.Connect()
+
+	defer database.Close(db)
+
+	if _, ok := data["in_channel"]; ok == false {
+		data["in_channel"] = false
+	}
+
+	db.Model(&p).UpdateColumns(data)
 }
 
 func (p *Proxy) Save() {
