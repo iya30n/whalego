@@ -19,32 +19,38 @@ func New() *MessageService {
 }
 
 func (ms *MessageService) GetMessages(chatId int64, fromMessage int64) *client.Messages {
+	defer connection.Close(ms.tgConnection)
+
 	result, err := ms.tgConnection.GetChatHistory(&client.GetChatHistoryRequest{
-        ChatId: chatId,
+		ChatId: chatId,
 		// FromMessageId: fromMessage,
-        Offset: 0,
-        Limit: 99,
-        OnlyLocal: false,
-    })
+		Offset:    0,
+		Limit:     99,
+		OnlyLocal: false,
+	})
 
 	errorHandler.LogFile(err)
 
 	return result
 }
 
-func (cs *MessageService) SendMessage(chatId int64, message client.InputMessageContent) *client.Message {
-	msg, err := cs.tgConnection.SendMessage(&client.SendMessageRequest{
-        ChatId: chatId,
-        InputMessageContent: message,
-    })
+func (ms *MessageService) SendMessage(chatId int64, message client.InputMessageContent) *client.Message {
+	defer connection.Close(ms.tgConnection)
+
+	msg, err := ms.tgConnection.SendMessage(&client.SendMessageRequest{
+		ChatId:              chatId,
+		InputMessageContent: message,
+	})
 
 	errorHandler.LogFile(err)
 
 	return msg
 }
 
-func (cs *MessageService) SendMarkdown(chatId int64, message string) *client.Message {
-	mdMsg, err := cs.tgConnection.ParseMarkdown(&client.ParseMarkdownRequest{
+func (ms *MessageService) SendMarkdown(chatId int64, message string) *client.Message {
+	defer connection.Close(ms.tgConnection)
+
+	mdMsg, err := ms.tgConnection.ParseMarkdown(&client.ParseMarkdownRequest{
 		Text: &client.FormattedText{
 			Text: message,
 		},
@@ -60,27 +66,29 @@ func (cs *MessageService) SendMarkdown(chatId int64, message string) *client.Mes
 
 	errorHandler.LogFile(err)
 
-	msg, err := cs.tgConnection.SendMessage(&client.SendMessageRequest{
-        ChatId: chatId,
-        InputMessageContent: &client.InputMessageText{
+	msg, err := ms.tgConnection.SendMessage(&client.SendMessageRequest{
+		ChatId: chatId,
+		InputMessageContent: &client.InputMessageText{
 			Text: mdMsg,
 		},
-    })
+	})
 
 	errorHandler.LogFile(err)
 
 	return msg
 }
 
-func (cs *MessageService) DeleteMessages(chatId int64, messageIds []int64) {
+func (ms *MessageService) DeleteMessages(chatId int64, messageIds []int64) {
+	defer connection.Close(ms.tgConnection)
+
 	if len(messageIds) < 1 {
 		return
 	}
 
-	_, err := cs.tgConnection.DeleteMessages(&client.DeleteMessagesRequest{
-		ChatId: chatId,
+	_, err := ms.tgConnection.DeleteMessages(&client.DeleteMessagesRequest{
+		ChatId:     chatId,
 		MessageIds: messageIds,
-		Revoke: true,
+		Revoke:     true,
 	})
 
 	errorHandler.LogFile(err)

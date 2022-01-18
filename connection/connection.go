@@ -7,15 +7,19 @@ import (
 	"github.com/zelenin/go-tdlib/client"
 )
 
-var (
-	hasSet bool = false
-	singletonConnection *client.Client
-)
+var singletonConnection *client.Client
+var isset bool = false
 
 func init() {
-	if hasSet == false {
-		hasSet = true
-		singletonConnection = makeConnection(true)
+	singletonConnection = TdConnection(true)
+	isset = true
+}
+
+func TdConnection(withProxy bool) *client.Client {
+	if isset {
+		return singletonConnection
+	} else {
+		return makeConnection(withProxy)
 	}
 }
 
@@ -42,7 +46,7 @@ func makeConnection(withProxy bool) *client.Client {
 		DeviceModel:            "Server",
 		SystemVersion:          "1.0.0",
 		ApplicationVersion:     "1.0.0",
-		EnableStorageOptimizer: true,
+		EnableStorageOptimizer: false,
 		IgnoreFileNames:        false,
 	}
 
@@ -54,21 +58,21 @@ func makeConnection(withProxy bool) *client.Client {
 		logVerbosity,
 	}
 
-	if withProxy == true {
+	if withProxy {
 		proxy := client.WithProxy(&client.AddProxyRequest{
-			/* Server: "127.0.0.1",
+			Server: "127.0.0.1",
 			Port:   9050,
 			Enable: true,
 			Type: &client.ProxyTypeSocks5{
 				Username: "",
 				Password: "",
-			}, */
-			Server: "tunicle.www.Bmi.ir.Bmi--ir.ml",
+			},
+			/* Server: "www.cloudflare.tattoo",
 			Port:   443,
 			Enable: true,
 			Type: &client.ProxyTypeMtproto{
-				Secret: "7jK5IN_7UWQwKOL2uHjU6sFjZG4uaW50ZXJuZXQub3Jn",
-			},
+				Secret: "dd00000000000000000000000000000000",
+			}, */
 		})
 
 		options = append(options, proxy)
@@ -81,10 +85,8 @@ func makeConnection(withProxy bool) *client.Client {
 	return tdlibClient
 }
 
-func TdConnection(withProxy bool) *client.Client {
-	if hasSet == true {
-		return singletonConnection
-	} else {
-		return makeConnection(withProxy)
-	}
+func Close(connection *client.Client) {
+	isset = false
+
+	connection.Close()
 }
