@@ -37,7 +37,7 @@ func makeConnection(withProxy bool) *client.Client {
 		DatabaseDirectory:      filepath.Join(".tdlib", "database"),
 		FilesDirectory:         filepath.Join(".tdlib", "files"),
 		UseFileDatabase:        true,
-		UseChatInfoDatabase:    false,
+		UseChatInfoDatabase:    true,
 		UseMessageDatabase:     false,
 		UseSecretChats:         false,
 		ApiId:                  apiId,
@@ -88,5 +88,6 @@ func makeConnection(withProxy bool) *client.Client {
 func Close(connection *client.Client) {
 	isset = false
 
-	connection.Close()
+	connection.Stop()
+	// connection.Close()
 }
