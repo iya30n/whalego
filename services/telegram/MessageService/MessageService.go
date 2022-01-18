@@ -19,8 +19,12 @@ func New() *MessageService {
 }
 
 func (ms *MessageService) GetMessages(chatId int64, fromMessage int64) *client.Messages {
+	defer ms.tgConnection.CloseChat(&client.CloseChatRequest{
+		ChatId: chatId,
+	})
+
 	defer connection.Close(ms.tgConnection)
-	ms.tgConnection.LoadChats(&client.LoadChatsRequest{})
+	// ms.tgConnection.LoadChats(&client.LoadChatsRequest{})
 	result, err := ms.tgConnection.GetChatHistory(&client.GetChatHistoryRequest{
 		ChatId: chatId,
 		// FromMessageId: fromMessage,
@@ -35,8 +39,12 @@ func (ms *MessageService) GetMessages(chatId int64, fromMessage int64) *client.M
 }
 
 func (ms *MessageService) SendMessage(chatId int64, message client.InputMessageContent) *client.Message {
+	defer ms.tgConnection.CloseChat(&client.CloseChatRequest{
+		ChatId: chatId,
+	})
+
 	defer connection.Close(ms.tgConnection)
-	ms.tgConnection.LoadChats(&client.LoadChatsRequest{})
+	// ms.tgConnection.LoadChats(&client.LoadChatsRequest{})
 	msg, err := ms.tgConnection.SendMessage(&client.SendMessageRequest{
 		ChatId:              chatId,
 		InputMessageContent: message,
@@ -48,6 +56,10 @@ func (ms *MessageService) SendMessage(chatId int64, message client.InputMessageC
 }
 
 func (ms *MessageService) SendMarkdown(chatId int64, message string) *client.Message {
+	defer ms.tgConnection.CloseChat(&client.CloseChatRequest{
+		ChatId: chatId,
+	})
+
 	defer connection.Close(ms.tgConnection)
 	mdMsg, err := ms.tgConnection.ParseMarkdown(&client.ParseMarkdownRequest{
 		Text: &client.FormattedText{
@@ -65,7 +77,7 @@ func (ms *MessageService) SendMarkdown(chatId int64, message string) *client.Mes
 
 	errorHandler.LogFile(err)
 
-	ms.tgConnection.LoadChats(&client.LoadChatsRequest{})
+	// ms.tgConnection.LoadChats(&client.LoadChatsRequest{})
 	msg, err := ms.tgConnection.SendMessage(&client.SendMessageRequest{
 		ChatId: chatId,
 		InputMessageContent: &client.InputMessageText{
@@ -79,6 +91,10 @@ func (ms *MessageService) SendMarkdown(chatId int64, message string) *client.Mes
 }
 
 func (ms *MessageService) DeleteMessages(chatId int64, messageIds []int64) {
+	defer ms.tgConnection.CloseChat(&client.CloseChatRequest{
+		ChatId: chatId,
+	})
+
 	defer connection.Close(ms.tgConnection)
 	ms.tgConnection.LoadChats(&client.LoadChatsRequest{})
 	if len(messageIds) < 1 {
