@@ -10,16 +10,18 @@ import (
 var singletonConnection *client.Client
 var isset bool = false
 
-func init() {
+/* func init() {
 	singletonConnection = TdConnection(true)
 	isset = true
-}
+} */
 
 func TdConnection(withProxy bool) *client.Client {
 	if isset {
 		return singletonConnection
 	} else {
-		return makeConnection(withProxy)
+		singletonConnection = makeConnection(true)
+		isset = true
+		return singletonConnection
 	}
 }
 
@@ -38,7 +40,7 @@ func makeConnection(withProxy bool) *client.Client {
 		FilesDirectory:         filepath.Join(".tdlib", "files"),
 		UseFileDatabase:        true,
 		UseChatInfoDatabase:    true,
-		UseMessageDatabase:     false,
+		UseMessageDatabase:     true,
 		UseSecretChats:         false,
 		ApiId:                  apiId,
 		ApiHash:                apiHash,
