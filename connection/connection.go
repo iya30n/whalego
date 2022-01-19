@@ -88,6 +88,6 @@ func makeConnection(withProxy bool) *client.Client {
 func Close(connection *client.Client) {
 	isset = false
 
-	connection.Stop()
-	// connection.Close()
+	// connection.Stop()
+	connection.Close()
 }
