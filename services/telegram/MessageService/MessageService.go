@@ -66,8 +66,11 @@ func (ms *MessageService) SendMarkdown(chatId int64, message string) *client.Mes
 
 	errorHandler.LogFile(err)
 
-	ms.tgConnection.GetBasicGroup(&client.GetBasicGroupRequest{
+	/* ms.tgConnection.GetBasicGroup(&client.GetBasicGroupRequest{
 		BasicGroupId: chatId,
+	}) */
+	ms.tgConnection.GetChat(&client.GetChatRequest{
+		ChatId: chatId,
 	})
 	msg, err := ms.tgConnection.SendMessage(&client.SendMessageRequest{
 		ChatId: chatId,
