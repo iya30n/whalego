@@ -190,6 +190,10 @@ func (ps *ProxyService) buttonMessageHandler(message *client.Message) string {
 func (ps *ProxyService) isValidProxy(proxy string) bool {
 	contains := false
 
+	if strings.Contains(proxy, "MISSING") || strings.Contains(proxy, "(") {
+		return false
+	}
+
 	for _, word := range []string{"proxy", "server", "port"} {
 		contains = strings.Contains(proxy, word)
 
