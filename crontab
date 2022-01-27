@@ -1,4 +1,4 @@
 0 * * * * cd /root/whalego && ./main proxy:send >> /dev/null 2>&1
 0 */6 * * * cd /root/whalego && ./main proxy:check >> /dev/null 2>&1
-0 * * * * /root/whalego && ./main proxy:crawl >> /dev/null 2>&1
+0 * * * * /root/whalego && ./main proxy:crawler >> /dev/null 2>&1
 # a comment to hold one line after the job
