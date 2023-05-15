@@ -91,5 +91,5 @@ func Close(connection *client.Client) {
 	isset = false
 
 	// connection.Stop()
-	connection.Close()
+	// connection.Close()
 }

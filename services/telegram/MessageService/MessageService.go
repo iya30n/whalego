@@ -20,7 +20,7 @@ func New() *MessageService {
 
 func GetMessages(chatId int64, fromMessage int64) *client.Messages {
 	tgConnection := connection.TdConnection(true)
-	defer connection.Close(tgConnection)
+	// defer connection.Close(tgConnection)
 
 	result, err := tgConnection.GetChatHistory(&client.GetChatHistoryRequest{
 		ChatId: chatId,
@@ -38,7 +38,7 @@ func GetMessages(chatId int64, fromMessage int64) *client.Messages {
 func SendMessage(chatId int64, message client.InputMessageContent) *client.Message {
 	tgConnection := connection.TdConnection(true)
 
-	defer connection.Close(tgConnection)
+	// defer connection.Close(tgConnection)
 
 	msg, err := tgConnection.SendMessage(&client.SendMessageRequest{
 		ChatId:              chatId,
@@ -53,7 +53,7 @@ func SendMessage(chatId int64, message client.InputMessageContent) *client.Messa
 func SendMarkdown(chatId int64, message string) *client.Message {
 	tgConnection := connection.TdConnection(true)
 
-	defer connection.Close(tgConnection)
+	// defer connection.Close(tgConnection)
 
 	mdMsg, err := tgConnection.ParseMarkdown(&client.ParseMarkdownRequest{
 		Text: &client.FormattedText{
@@ -92,7 +92,7 @@ func SendMarkdown(chatId int64, message string) *client.Message {
 func DeleteMessages(chatId int64, messageIds []int64) {
 	tgConnection := connection.TdConnection(true)
 
-	defer connection.Close(tgConnection)
+	// defer connection.Close(tgConnection)
 
 	if len(messageIds) < 1 {
 		return
