@@ -22,19 +22,19 @@ func main() {
 	if os.Args[1] == "proxy:crawler" {
 		channels := Channel.New()
 		for _, channel := range channels.All() {
-			ProxyService.New().GetProxies(&channel)
+			ProxyService.GetProxies(&channel)
 		}
 
 		os.Exit(1)
 	}
 
 	if os.Args[1] == "proxy:send" {
-		ProxyService.New().SendProxy()
+		ProxyService.SendProxy()
 		os.Exit(1)
 	}
 
 	if os.Args[1] == "proxy:check" {
-		ProxyService.New().CheckAllProxies()
+		ProxyService.CheckAllProxies()
 		os.Exit(1)
 	}
 }
