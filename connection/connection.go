@@ -2,27 +2,21 @@ package connection
 
 import (
 	"path/filepath"
+	"sync"
 	"whalego/errorHandler"
 
 	"github.com/zelenin/go-tdlib/client"
 )
 
+var doOnce sync.Once
 var singletonConnection *client.Client
-var isset bool = false
-
-/* func init() {
-	singletonConnection = TdConnection(true)
-	isset = true
-} */
 
 func TdConnection(withProxy bool) *client.Client {
-	if isset {
-		return singletonConnection
-	} else {
-		singletonConnection = makeConnection(true)
-		isset = true
-		return singletonConnection
-	}
+	doOnce.Do(func() {
+		singletonConnection = makeConnection(withProxy)
+	})
+
+	return singletonConnection
 }
 
 func makeConnection(withProxy bool) *client.Client {
@@ -62,19 +56,19 @@ func makeConnection(withProxy bool) *client.Client {
 
 	if withProxy {
 		proxy := client.WithProxy(&client.AddProxyRequest{
-			/*Server: "127.0.0.1",
-			Port:   9050,
+			Server: "127.0.0.1",
+			Port:   1089,
 			Enable: true,
 			Type: &client.ProxyTypeSocks5{
 				Username: "",
 				Password: "",
-			},*/
-			Server: "www.cloudflare.tattoo",
+			},
+			/* Server: "www.cloudflare.tattoo",
 			Port:   443,
 			Enable: true,
 			Type: &client.ProxyTypeMtproto{
 				Secret: "dd00000000000000000000000000000000",
-			},
+			}, */
 		})
 
 		options = append(options, proxy)
@@ -88,8 +82,6 @@ func makeConnection(withProxy bool) *client.Client {
 }
 
 func Close(connection *client.Client) {
-	isset = false
-
 	// connection.Stop()
 	// connection.Close()
 }
