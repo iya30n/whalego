@@ -9,7 +9,7 @@ import (
 func GetChatId(username string) (*client.Chat, error) {
 	tgConnection := connection.TdConnection(true)
 
-	defer connection.Close(tgConnection)
+	// defer connection.Close(tgConnection)
 	// tgConnection.GetChats(&client.GetChatsRequest{})
 	return tgConnection.SearchPublicChat(&client.SearchPublicChatRequest{
 		Username: username,
