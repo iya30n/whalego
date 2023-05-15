@@ -52,25 +52,26 @@ func makeConnection(withProxy bool) *client.Client {
 		log.Fatalf("SetLogVerbosityLevel error: %s", err)
 	}
 
-	// if withProxy {
-	proxy := client.WithProxy(&client.AddProxyRequest{
-		Server: config.Proxy.Secret,
-		Port:   config.Proxy.Port,
-		Enable: true,
-		Type: &client.ProxyTypeSocks5{
+	var proxyType client.ProxyType
+
+	if len(config.Proxy.Secret) == 0 {
+		proxyType = &client.ProxyTypeSocks5{
 			Username: "",
 			Password: "",
-		},
-		/* Server: "www.cloudflare.tattoo",
-		Port:   443,
-		Enable: true,
-		Type: &client.ProxyTypeMtproto{
-			Secret: "dd00000000000000000000000000000000",
-		}, */
-	})
+		}
+	} else {
+		proxyType = &client.ProxyTypeMtproto{
+			Secret: config.Proxy.Secret,
+		}
+	}
 
-	// options = append(options, proxy)
-	// }
+	// if withProxy {
+	proxy := client.WithProxy(&client.AddProxyRequest{
+		Server: config.Proxy.Server,
+		Port:   config.Proxy.Port,
+		Enable: true,
+		Type: proxyType,
+	})
 
 	tdlibClient, err := client.NewClient(authorizer, proxy)
 	errorHandler.LogFile(err)
@@ -78,9 +79,7 @@ func makeConnection(withProxy bool) *client.Client {
 	optionValue, err := tdlibClient.GetOption(&client.GetOptionRequest{
 		Name: "version",
 	})
-	if err != nil {
-		log.Fatalf("GetOption error: %s", err)
-	}
+	errorHandler.LogFile(err)
 
 	log.Printf("TDLib version: %s", optionValue.(*client.OptionValueString).Value)
 
