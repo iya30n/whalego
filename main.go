@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"os"
 	"whalego/database/migration"
+	"whalego/errorHandler"
 	"whalego/models/Channel"
+	"whalego/services/telegram/ChatService"
+	"whalego/services/telegram/MessageService"
 	"whalego/services/telegram/ProxyService"
 )
 
@@ -36,5 +39,11 @@ func main() {
 	if os.Args[1] == "proxy:check" {
 		ProxyService.CheckAllProxies()
 		os.Exit(1)
+	}
+
+	if os.Args[1] == "test" {
+		chatID, err := ChatService.GetChatId("iya30n")
+		errorHandler.LogFile(err)
+		MessageService.SendMarkdown(chatID.Id, "salam from whale")
 	}
 }

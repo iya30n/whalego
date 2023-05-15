@@ -48,12 +48,9 @@ func makeConnection(withProxy bool) *client.Client {
 	_, err := client.SetLogVerbosityLevel(&client.SetLogVerbosityLevelRequest{
 		NewVerbosityLevel: 1,
 	})
-	if err != nil {
-		log.Fatalf("SetLogVerbosityLevel error: %s", err)
-	}
+	errorHandler.LogFile(err)
 
 	var proxyType client.ProxyType
-
 	if len(config.Proxy.Secret) == 0 {
 		proxyType = &client.ProxyTypeSocks5{
 			Username: "",
