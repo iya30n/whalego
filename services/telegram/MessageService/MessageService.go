@@ -18,10 +18,11 @@ func New() *MessageService {
 	}
 }
 
-func (ms *MessageService) GetMessages(chatId int64, fromMessage int64) *client.Messages {
-	defer connection.Close(ms.tgConnection)
+func GetMessages(chatId int64, fromMessage int64) *client.Messages {
+	tgConnection := connection.TdConnection(true)
+	defer connection.Close(tgConnection)
 
-	result, err := ms.tgConnection.GetChatHistory(&client.GetChatHistoryRequest{
+	result, err := tgConnection.GetChatHistory(&client.GetChatHistoryRequest{
 		ChatId: chatId,
 		// FromMessageId: fromMessage,
 		Offset:    0,
@@ -34,10 +35,12 @@ func (ms *MessageService) GetMessages(chatId int64, fromMessage int64) *client.M
 	return result
 }
 
-func (ms *MessageService) SendMessage(chatId int64, message client.InputMessageContent) *client.Message {
-	defer connection.Close(ms.tgConnection)
+func SendMessage(chatId int64, message client.InputMessageContent) *client.Message {
+	tgConnection := connection.TdConnection(true)
 
-	msg, err := ms.tgConnection.SendMessage(&client.SendMessageRequest{
+	defer connection.Close(tgConnection)
+
+	msg, err := tgConnection.SendMessage(&client.SendMessageRequest{
 		ChatId:              chatId,
 		InputMessageContent: message,
 	})
@@ -47,16 +50,18 @@ func (ms *MessageService) SendMessage(chatId int64, message client.InputMessageC
 	return msg
 }
 
-func (ms *MessageService) SendMarkdown(chatId int64, message string) *client.Message {
-	defer connection.Close(ms.tgConnection)
+func SendMarkdown(chatId int64, message string) *client.Message {
+	tgConnection := connection.TdConnection(true)
 
-	mdMsg, err := ms.tgConnection.ParseMarkdown(&client.ParseMarkdownRequest{
+	defer connection.Close(tgConnection)
+
+	mdMsg, err := tgConnection.ParseMarkdown(&client.ParseMarkdownRequest{
 		Text: &client.FormattedText{
 			Text: message,
 		},
 	})
 
-	/* mdMsg, err := cs.tgConnection.ParseTextEntities(&client.ParseTextEntitiesRequest{
+	/* mdMsg, err := tgConnection.ParseTextEntities(&client.ParseTextEntitiesRequest{
 		// Text: "*bold* _italic_ `code`",
 		Text: message,
 		ParseMode: &client.TextParseModeMarkdown{
@@ -66,13 +71,13 @@ func (ms *MessageService) SendMarkdown(chatId int64, message string) *client.Mes
 
 	errorHandler.LogFile(err)
 
-	/* ms.tgConnection.GetBasicGroup(&client.GetBasicGroupRequest{
+	/* tgConnection.GetBasicGroup(&client.GetBasicGroupRequest{
 		BasicGroupId: chatId,
 	}) */
-	ms.tgConnection.GetChat(&client.GetChatRequest{
+	tgConnection.GetChat(&client.GetChatRequest{
 		ChatId: chatId,
 	})
-	msg, err := ms.tgConnection.SendMessage(&client.SendMessageRequest{
+	msg, err := tgConnection.SendMessage(&client.SendMessageRequest{
 		ChatId: chatId,
 		InputMessageContent: &client.InputMessageText{
 			Text: mdMsg,
@@ -84,14 +89,16 @@ func (ms *MessageService) SendMarkdown(chatId int64, message string) *client.Mes
 	return msg
 }
 
-func (ms *MessageService) DeleteMessages(chatId int64, messageIds []int64) {
-	defer connection.Close(ms.tgConnection)
+func DeleteMessages(chatId int64, messageIds []int64) {
+	tgConnection := connection.TdConnection(true)
+
+	defer connection.Close(tgConnection)
 
 	if len(messageIds) < 1 {
 		return
 	}
 
-	_, err := ms.tgConnection.DeleteMessages(&client.DeleteMessagesRequest{
+	_, err := tgConnection.DeleteMessages(&client.DeleteMessagesRequest{
 		ChatId:     chatId,
 		MessageIds: messageIds,
 		Revoke:     true,
