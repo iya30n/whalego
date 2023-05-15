@@ -73,8 +73,8 @@ func GetProxies(channel *Channel.Channel) {
 }
 
 func SendProxy() {
-	whaleChannelUsername := Config.Telegram["whale_channel"]
-	chatId, err := ChatService.GetChatId(whaleChannelUsername)
+	config := Config.Get()
+	chatId, err := ChatService.GetChatId(config.ChannelName)
 
 	errorHandler.LogFile(err)
 
@@ -103,9 +103,9 @@ func SendProxy() {
 }
 
 func CheckAllProxies() {
-	whaleChannelUsername := Config.Telegram["whale_channel"]
+	config := Config.Get()
 
-	chatId, err := ChatService.GetChatId(whaleChannelUsername)
+	chatId, err := ChatService.GetChatId(config.ChannelName)
 	errorHandler.LogFile(err)
 
 	deleteProxies := []Proxy.Proxy{}
