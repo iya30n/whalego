@@ -1,7 +1,6 @@
 package connection
 
 import (
-	"log"
 	"path/filepath"
 	"sync"
 	"whalego/Config"
@@ -45,10 +44,11 @@ func makeConnection(withProxy bool) *client.Client {
 		IgnoreFileNames:        false,
 	}
 
-	_, err := client.SetLogVerbosityLevel(&client.SetLogVerbosityLevelRequest{
-		NewVerbosityLevel: 1,
-	})
-	errorHandler.LogFile(err)
+	options := []client.Option{
+		client.WithLogVerbosity(&client.SetLogVerbosityLevelRequest{
+			NewVerbosityLevel: 1,
+		}),
+	}
 
 	var proxyType client.ProxyType
 	if len(config.Proxy.Secret) == 0 {
@@ -62,23 +62,16 @@ func makeConnection(withProxy bool) *client.Client {
 		}
 	}
 
-	// if withProxy {
 	proxy := client.WithProxy(&client.AddProxyRequest{
 		Server: config.Proxy.Server,
 		Port:   config.Proxy.Port,
 		Enable: true,
-		Type: proxyType,
+		Type:   proxyType,
 	})
+	options = append(options, proxy)
 
-	tdlibClient, err := client.NewClient(authorizer, proxy)
+	tdlibClient, err := client.NewClient(authorizer, options...)
 	errorHandler.LogFile(err)
-
-	optionValue, err := tdlibClient.GetOption(&client.GetOptionRequest{
-		Name: "version",
-	})
-	errorHandler.LogFile(err)
-
-	log.Printf("TDLib version: %s", optionValue.(*client.OptionValueString).Value)
 
 	return tdlibClient
 }
