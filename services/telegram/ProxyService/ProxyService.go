@@ -247,7 +247,7 @@ func checkProxyIsAvailable(proxy Proxy.Proxy) (string, bool) {
 	charindex := strings.Index(string(out), "time=")
 	time := string(out[charindex+5:])
 	ping := strings.TrimSpace(time[:4])
-	pingInt, err := strconv.ParseFloat(ping, 10)
+	pingInt, err := strconv.ParseFloat(ping, 32)
 
 	if pingInt > 450 || err != nil {
 		return "0", false

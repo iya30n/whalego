@@ -22,10 +22,15 @@ func GetMessages(chatId int64, fromMessage int64) *client.Messages {
 	tgConnection := connection.TdConnection(true)
 	// defer connection.Close(tgConnection)
 
+	/* tgConnection.GetMessages(&client.GetMessagesRequest{
+
+	}) */
+
 	result, err := tgConnection.GetChatHistory(&client.GetChatHistoryRequest{
 		ChatId: chatId,
 		// FromMessageId: fromMessage,
-		Offset:    0,
+		// Offset:    0,
+		FromMessageId: 0,
 		Limit:     99,
 		OnlyLocal: false,
 	})
@@ -74,9 +79,9 @@ func SendMarkdown(chatId int64, message string) *client.Message {
 	/* tgConnection.GetBasicGroup(&client.GetBasicGroupRequest{
 		BasicGroupId: chatId,
 	}) */
-	tgConnection.GetChat(&client.GetChatRequest{
+	/*tgConnection.GetChat(&client.GetChatRequest{
 		ChatId: chatId,
-	})
+	})*/
 	msg, err := tgConnection.SendMessage(&client.SendMessageRequest{
 		ChatId: chatId,
 		InputMessageContent: &client.InputMessageText{
