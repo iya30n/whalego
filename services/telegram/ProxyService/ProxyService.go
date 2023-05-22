@@ -236,7 +236,7 @@ func getProxyData(proxy string) (Proxy.Proxy, bool) {
 
 func checkProxyIsAvailable(proxy Proxy.Proxy) (string, bool) {
 	// run a command to get ping of a server
-	out, _ := exec.Command("ping", proxy.Address, "-c 5", "-i 3", "-w 10").Output()
+	out, _ := exec.Command("ping", proxy.Address, "-c 5", "-i 3").Output()
 
 	// check if server is not available
 	if strings.Contains(string(out), "Destination Host Unreachable") || string(out) == "" {
