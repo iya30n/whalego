@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	// "os"
 	"whalego/connection"
 	"whalego/database/migration"
 	"whalego/errorHandler"
@@ -69,10 +68,4 @@ func main() {
 			continue
 		}
 	}
-
-	/* if len(os.Args) < 2 {
-		fmt.Println("what can i do for you?")
-		os.Exit(1)
-	} */
-
 }
