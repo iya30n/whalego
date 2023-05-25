@@ -1,0 +1,19 @@
+{
+	"channel_name": "CHANNEL_NAME",
+	"api": {
+		"api_id": 1234,
+		"api_hash": "YOUR_HASH"
+	},
+	"database": {
+		"host": "127.0.0.1",
+		"port": "3306",
+		"db_name": "DB_NAME",
+		"username": "DB_USERNAME",
+		"password": "DB_PASSWORD"
+	},
+	"proxy": {
+		"server":"127.0.0.1",
+		"port": 1089,
+		"secret":""
+	}
+}
