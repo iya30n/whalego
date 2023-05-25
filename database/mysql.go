@@ -9,11 +9,13 @@ import (
 )
 
 func Connect() *gorm.DB {
-	host := Config.Database["HOST"]
-	port := Config.Database["PORT"]
-	dbName := Config.Database["DBNAME"]
-	username := Config.Database["USERNAME"]
-	pass := Config.Database["PASS"]
+	config := Config.Get()
+
+	host := config.Database.Host
+	port := config.Database.Port
+	dbName := config.Database.DBName
+	username := config.Database.Username
+	pass := config.Database.Password
 
 	dsn := username + ":" + pass + "@tcp(" + host + ":" + port + ")/" + dbName + "?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})

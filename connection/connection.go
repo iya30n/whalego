@@ -2,37 +2,29 @@ package connection
 
 import (
 	"path/filepath"
+	"sync"
+	"whalego/Config"
 	"whalego/errorHandler"
 
 	"github.com/zelenin/go-tdlib/client"
 )
 
+var doOnce sync.Once
 var singletonConnection *client.Client
-var isset bool = false
-
-/* func init() {
-	singletonConnection = TdConnection(true)
-	isset = true
-} */
 
 func TdConnection(withProxy bool) *client.Client {
-	if isset {
-		return singletonConnection
-	} else {
-		singletonConnection = makeConnection(true)
-		isset = true
-		return singletonConnection
-	}
+	doOnce.Do(func() {
+		singletonConnection = makeConnection(withProxy)
+	})
+
+	return singletonConnection
 }
 
 func makeConnection(withProxy bool) *client.Client {
+	config := Config.Get()
+
 	authorizer := client.ClientAuthorizer()
 	go client.CliInteractor(authorizer)
-
-	const (
-		apiId   = 5339469
-		apiHash = "841a53b1aabfe94d8bcf5a88a5624d6d"
-	)
 
 	authorizer.TdlibParameters <- &client.TdlibParameters{
 		UseTestDc:              false,
@@ -42,54 +34,49 @@ func makeConnection(withProxy bool) *client.Client {
 		UseChatInfoDatabase:    true,
 		UseMessageDatabase:     true,
 		UseSecretChats:         false,
-		ApiId:                  apiId,
-		ApiHash:                apiHash,
+		ApiId:                  config.Api.ApiId,
+		ApiHash:                config.Api.ApiHash,
 		SystemLanguageCode:     "en",
 		DeviceModel:            "Server",
 		SystemVersion:          "1.0.0",
 		ApplicationVersion:     "1.0.0",
-		EnableStorageOptimizer: false,
+		EnableStorageOptimizer: true,
 		IgnoreFileNames:        false,
 	}
 
-	logVerbosity := client.WithLogVerbosity(&client.SetLogVerbosityLevelRequest{
-		NewVerbosityLevel: 0,
-	})
-
 	options := []client.Option{
-		logVerbosity,
+		client.WithLogVerbosity(&client.SetLogVerbosityLevelRequest{
+			NewVerbosityLevel: 1,
+		}),
 	}
 
-	if withProxy {
-		proxy := client.WithProxy(&client.AddProxyRequest{
-			/*Server: "127.0.0.1",
-			Port:   9050,
-			Enable: true,
-			Type: &client.ProxyTypeSocks5{
-				Username: "",
-				Password: "",
-			},*/
-			Server: "www.cloudflare.tattoo",
-			Port:   443,
-			Enable: true,
-			Type: &client.ProxyTypeMtproto{
-				Secret: "dd00000000000000000000000000000000",
-			},
-		})
-
-		options = append(options, proxy)
+	var proxyType client.ProxyType
+	if len(config.Proxy.Secret) == 0 {
+		proxyType = &client.ProxyTypeSocks5{
+			Username: "",
+			Password: "",
+		}
+	} else {
+		proxyType = &client.ProxyTypeMtproto{
+			Secret: config.Proxy.Secret,
+		}
 	}
+
+	proxy := client.WithProxy(&client.AddProxyRequest{
+		Server: config.Proxy.Server,
+		Port:   config.Proxy.Port,
+		Enable: true,
+		Type:   proxyType,
+	})
+	options = append(options, proxy)
 
 	tdlibClient, err := client.NewClient(authorizer, options...)
-
 	errorHandler.LogFile(err)
 
 	return tdlibClient
 }
 
 func Close(connection *client.Client) {
-	isset = false
-
 	// connection.Stop()
-	connection.Close()
+	// connection.Close()
 }

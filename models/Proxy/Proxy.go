@@ -52,7 +52,7 @@ func (p *Proxy) GetNotInChannel(limit int) []Proxy{
 
 	var proxies []Proxy
 
-	db.Where("in_channel = ?", false).Limit(limit).Find(&proxies)
+	db.Where("in_channel", false).Limit(limit).Find(&proxies)
 
 	return proxies
 }
@@ -97,7 +97,7 @@ func (p *Proxy) Exists() bool {
 	defer database.Close(db)
 
 	var proxies []Proxy
-	db.Where("address = ?", p.Address).Find(&proxies)
+	db.Where("address", p.Address).Find(&proxies)
 
 	return len(proxies) > 0
 }

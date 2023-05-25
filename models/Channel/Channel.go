@@ -37,7 +37,7 @@ func (c *Channel) FindByUsername(username string) *Channel {
 
 	defer database.Close(db)
 
-	db.Find(&c, "username = ?", username)
+	db.Find(&c, "username", username)
 
 	if c.Username == "" {
 		panic("the channel " + username + " does not exists.")
@@ -67,11 +67,11 @@ func (c *Channel) GetChatId() int64 {
 		return c.ChatId
 	} */
 
-	chat, err := ChatService.New().GetChatId(c.Username)
+	chat, err := ChatService.GetChatId(c.Username)
 
 	if err != nil && err.Error() == "USERNAME_NOT_OCCUPIED" || chat == nil {
 		c.Delete()
-		
+
 		return 0
 	}
 

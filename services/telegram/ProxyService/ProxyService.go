@@ -21,14 +21,7 @@ import (
 	"github.com/zelenin/go-tdlib/client"
 )
 
-type ProxyService struct {
-}
-
-func New() *ProxyService {
-	return &ProxyService{}
-}
-
-func (ps *ProxyService) GetProxies(channel *Channel.Channel) {
+func GetProxies(channel *Channel.Channel) {
 	fmt.Println("checking channel " + channel.Username)
 
 	chatId := channel.GetChatId()
@@ -36,7 +29,7 @@ func (ps *ProxyService) GetProxies(channel *Channel.Channel) {
 		return
 	}
 
-	messages := MessageService.New().GetMessages(chatId, channel.Last_message_receive)
+	messages := MessageService.GetMessages(chatId, channel.Last_message_receive)
 
 	if messages.TotalCount == 0 || messages.Messages == nil {
 		return
@@ -46,18 +39,18 @@ func (ps *ProxyService) GetProxies(channel *Channel.Channel) {
 		var proxy string
 
 		if channel.Handler == "text" {
-			proxy = ps.textMessageHandler(message)
+			proxy = textMessageHandler(message)
 		}
 
 		if channel.Handler == "button" {
-			proxy = ps.buttonMessageHandler(message)
+			proxy = buttonMessageHandler(message)
 		}
 
-		if !ps.isValidProxy(proxy) {
+		if !isValidProxy(proxy) {
 			continue
 		}
 
-		proxyData, ok := ps.getProxyData(proxy)
+		proxyData, ok := getProxyData(proxy)
 		if ok == false {
 			continue
 		}
@@ -66,7 +59,7 @@ func (ps *ProxyService) GetProxies(channel *Channel.Channel) {
 			continue
 		}
 
-		ping, isAvailable := ps.checkProxyIsAvailable(proxyData)
+		ping, isAvailable := checkProxyIsAvailable(proxyData)
 		if isAvailable == false {
 			continue
 		}
@@ -79,40 +72,40 @@ func (ps *ProxyService) GetProxies(channel *Channel.Channel) {
 	}
 }
 
-func (ps *ProxyService) SendProxy() {
-	whaleChannelUsername := Config.Telegram["whale_channel"]
-	chatId, err := ChatService.New().GetChatId(whaleChannelUsername)
+func SendProxy() {
+	config := Config.Get()
+	chatId, err := ChatService.GetChatId(config.ChannelName)
 
 	errorHandler.LogFile(err)
 
 	var availableProxy Proxy.Proxy
 
 	for _, p := range Proxy.New().GetNotInChannel(5) {
-		if _, ok := ps.checkProxyIsAvailable(p); ok == true {
+		if _, ok := checkProxyIsAvailable(p); ok == true {
 			availableProxy = p
 			break
 		}
 	}
 
-	proxyMessage := "server: "+availableProxy.Address+"\nport: %d\nping: **"+availableProxy.Ping+"**\n\n ▶️[ Connect ]("+availableProxy.Url+")◀️\n➖➖➖➖➖➖➖➖➖➖\n🔽**پروکسی های بیشتر**🔽\n🆔 @whaleproxies"
+	proxyMessage := "server: " + availableProxy.Address + "\nport: %d\nping: **" + availableProxy.Ping + "**\n\n ▶️[ Connect ](" + availableProxy.Url + ")◀️\n➖➖➖➖➖➖➖➖➖➖\n🔽**پروکسی های بیشتر**🔽\n🆔 @whaleproxies"
 	proxyMessage = fmt.Sprintf(proxyMessage, availableProxy.Port)
 
 	// proxyMessage := "server: %d \nport: %d\nping: **%d**\n\n [▶️   Connect   ◀️](%d) \n➖➖➖➖➖➖➖➖➖➖\n🔽**پروکسی های بیشتر**🔽\n🆔 @whaleproxies"
 	// proxyMessage := "server: `%d` \nport: `%d`\nping: **`%d`**\n\n [▶️   Connect   ◀️](`%d`) \n➖➖➖➖➖➖➖➖➖➖\n🔽**پروکسی های بیشتر**🔽\n🆔 @whaleproxies"
 	// proxyMessage = fmt.Sprint(proxyMessage, availableProxy.Address, availableProxy.Port, availableProxy.Ping, availableProxy.Url)
 
-	sentMessage := MessageService.New().SendMarkdown(chatId.Id, proxyMessage)
+	sentMessage := MessageService.SendMarkdown(chatId.Id, proxyMessage)
 
 	availableProxy.Update(map[string]interface{}{
-		"in_channel": true,
+		"in_channel":         true,
 		"channel_message_id": sentMessage.Id,
 	})
 }
 
-func (ps *ProxyService) CheckAllProxies() {
-	whaleChannelUsername := Config.Telegram["whale_channel"]
-	
-	chatId, err := ChatService.New().GetChatId(whaleChannelUsername)
+func CheckAllProxies() {
+	config := Config.Get()
+
+	chatId, err := ChatService.GetChatId(config.ChannelName)
 	errorHandler.LogFile(err)
 
 	deleteProxies := []Proxy.Proxy{}
@@ -120,7 +113,7 @@ func (ps *ProxyService) CheckAllProxies() {
 	deleteMessages := []int64{}
 
 	for _, proxy := range Proxy.New().All() {
-		ping, isAvailable := ps.checkProxyIsAvailable(proxy)
+		ping, isAvailable := checkProxyIsAvailable(proxy)
 		if isAvailable {
 			proxy.Ping = ping
 			proxy.Save()
@@ -135,7 +128,7 @@ func (ps *ProxyService) CheckAllProxies() {
 		deleteProxies = append(deleteProxies, proxy)
 	}
 
-	MessageService.New().DeleteMessages(chatId.Id, deleteMessages)
+	MessageService.DeleteMessages(chatId.Id, deleteMessages)
 
 	Proxy.New().DeleteMany(deleteProxies)
 }
@@ -143,7 +136,7 @@ func (ps *ProxyService) CheckAllProxies() {
 /**
 * get message url from content key
  */
-func (ps *ProxyService) textMessageHandler(message *client.Message) string {
+func textMessageHandler(message *client.Message) string {
 	contentType := message.Content.MessageContentType()
 	if contentType != client.TypeMessageText && contentType != client.TypeMessage {
 		return ""
@@ -170,7 +163,7 @@ func (ps *ProxyService) textMessageHandler(message *client.Message) string {
 /**
 * get message url from message button key
  */
-func (ps *ProxyService) buttonMessageHandler(message *client.Message) string {
+func buttonMessageHandler(message *client.Message) string {
 
 	if message.ReplyMarkup == nil {
 		return ""
@@ -187,7 +180,7 @@ func (ps *ProxyService) buttonMessageHandler(message *client.Message) string {
 	return url
 }
 
-func (ps *ProxyService) isValidProxy(proxy string) bool {
+func isValidProxy(proxy string) bool {
 	contains := false
 
 	if strings.Contains(proxy, "MISSING") || strings.Contains(proxy, "(") {
@@ -208,7 +201,7 @@ func (ps *ProxyService) isValidProxy(proxy string) bool {
 /**
 * convert proxy url to Proxy model
  */
-func (ps *ProxyService) getProxyData(proxy string) (Proxy.Proxy, bool) {
+func getProxyData(proxy string) (Proxy.Proxy, bool) {
 	// get query parameters from proxy url
 	u, err := url.Parse(proxy)
 	if err != nil {
@@ -241,9 +234,9 @@ func (ps *ProxyService) getProxyData(proxy string) (Proxy.Proxy, bool) {
 	} */
 }
 
-func (ps *ProxyService) checkProxyIsAvailable(proxy Proxy.Proxy) (string, bool) {
+func checkProxyIsAvailable(proxy Proxy.Proxy) (string, bool) {
 	// run a command to get ping of a server
-	out, _ := exec.Command("ping", proxy.Address, "-c 5", "-i 3", "-w 10").Output()
+	out, _ := exec.Command("ping", proxy.Address, "-c 5", "-i 3").Output()
 
 	// check if server is not available
 	if strings.Contains(string(out), "Destination Host Unreachable") || string(out) == "" {
@@ -254,7 +247,7 @@ func (ps *ProxyService) checkProxyIsAvailable(proxy Proxy.Proxy) (string, bool) 
 	charindex := strings.Index(string(out), "time=")
 	time := string(out[charindex+5:])
 	ping := strings.TrimSpace(time[:4])
-	pingInt, err := strconv.ParseFloat(ping, 10)
+	pingInt, err := strconv.ParseFloat(ping, 32)
 
 	if pingInt > 450 || err != nil {
 		return "0", false
