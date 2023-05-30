@@ -55,7 +55,7 @@ func GetProxies(channel *Channel.Channel) {
 			continue
 		}
 
-		if proxyData.Exists() == true {
+		if proxyData.Exists() {
 			continue
 		}
 

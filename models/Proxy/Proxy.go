@@ -62,7 +62,7 @@ func (p *Proxy) Create(data map[string]interface{}) {
 
 	defer database.Close(db)
 
-	if _, ok := data["in_channel"]; ok == false {
+	if _, ok := data["in_channel"]; !ok {
 		data["in_channel"] = false
 	}
 
@@ -74,7 +74,7 @@ func (p *Proxy) Update(data map[string]interface{}) {
 
 	defer database.Close(db)
 
-	if _, ok := data["in_channel"]; ok == false {
+	if _, ok := data["in_channel"]; !ok {
 		data["in_channel"] = false
 	}
 
@@ -96,10 +96,15 @@ func (p *Proxy) Exists() bool {
 
 	defer database.Close(db)
 
-	var proxies []Proxy
+	/* var proxies []Proxy
 	db.Where("address", p.Address).Find(&proxies)
 
-	return len(proxies) > 0
+	return len(proxies) > 0 */
+
+	var proxy Proxy
+	db.Find(&proxy, "address", p.Address)
+
+	return len(proxy.Address) > 0
 }
 
 func (p *Proxy) Delete() {
