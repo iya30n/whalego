@@ -54,7 +54,7 @@ func main() {
 func tickerHandler() {
 	crawlerTicker := time.NewTicker(time.Hour * 2)
 
-	sendTicker := time.NewTicker(time.Hour)
+	sendTicker := time.NewTicker(time.Hour * 2)
 
 	checkTicker := time.NewTicker(time.Hour * 6)
 
