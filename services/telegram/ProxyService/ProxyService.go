@@ -91,7 +91,9 @@ func SendProxy() {
 		return
 	}
 
-	proxyMessage := "server: " + availableProxy.Address + "\nport: %d\nping: **" + availableProxy.Ping + "**\n\n ▶️[ Connect ](" + availableProxy.Url + ")◀️\n➖➖➖➖➖➖➖➖➖➖\n🔽**پروکسی های بیشتر**🔽\n🆔 @whaleproxies"
+	proxyUrl := strings.Replace(availableProxy.Url, " ", "%20", -1)
+
+	proxyMessage := "server: " + availableProxy.Address + "\nport: %d\nping: **" + availableProxy.Ping + "**\n\n ▶️[ Connect ](" + proxyUrl + ")◀️\n➖➖➖➖➖➖➖➖➖➖\n🔽**پروکسی های بیشتر**🔽\n🆔 @whaleproxies"
 	proxyMessage = fmt.Sprintf(proxyMessage, availableProxy.Port)
 
 	// proxyMessage := "server: %d \nport: %d\nping: **%d**\n\n [▶️   Connect   ◀️](%d) \n➖➖➖➖➖➖➖➖➖➖\n🔽**پروکسی های بیشتر**🔽\n🆔 @whaleproxies"
