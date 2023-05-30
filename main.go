@@ -36,14 +36,17 @@ func main() {
 			for _, channel := range channels.All() {
 				ProxyService.GetProxies(&channel)
 			}
+			fmt.Println("Done!")
 		case "proxy:send":
 			fmt.Println("command proxy:send is running...")
 			ProxyService.SendProxy()
+			fmt.Println("Done!")
 		case "proxy:check":
 			fmt.Println("command proxy:check is running...")
 			ProxyService.CheckAllProxies()
+			fmt.Println("Done!")
 		default:
-			log.Println("Invalid argument!")
+			fmt.Println("Invalid argument!")
 		}
 	}
 }
