@@ -81,10 +81,14 @@ func SendProxy() {
 	var availableProxy Proxy.Proxy
 
 	for _, p := range Proxy.New().GetNotInChannel(5) {
-		if _, ok := checkProxyIsAvailable(p); ok == true {
+		if _, ok := checkProxyIsAvailable(p); ok {
 			availableProxy = p
 			break
 		}
+	}
+
+	if len(availableProxy.Url) == 0 {
+		return
 	}
 
 	proxyMessage := "server: " + availableProxy.Address + "\nport: %d\nping: **" + availableProxy.Ping + "**\n\n ▶️[ Connect ](" + availableProxy.Url + ")◀️\n➖➖➖➖➖➖➖➖➖➖\n🔽**پروکسی های بیشتر**🔽\n🆔 @whaleproxies"
