@@ -121,8 +121,9 @@ func CheckAllProxies() {
 	for _, proxy := range Proxy.New().All() {
 		ping, isAvailable := checkProxyIsAvailable(proxy)
 		if isAvailable {
-			proxy.Ping = ping
-			proxy.Save()
+			// proxy.Ping = ping
+			// proxy.Save()
+			proxy.Update(map[string]interface{}{"in_channel": proxy.InChannel, "ping": ping})
 
 			continue
 		}
