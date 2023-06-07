@@ -112,7 +112,7 @@ func (p *Proxy) Delete() {
 
 	defer database.Close(db)
 
-	db.Unscoped().Delete(&p)
+	db.Delete(&p, p.ID)
 }
 
 func (p *Proxy) DeleteMany(proxies []Proxy) {
@@ -120,5 +120,5 @@ func (p *Proxy) DeleteMany(proxies []Proxy) {
 
 	defer database.Close(db)
 
-	db.Unscoped().Delete(proxies)
+	db.Delete(&p, proxies)
 }
