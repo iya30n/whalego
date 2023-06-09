@@ -122,5 +122,5 @@ func (p *Proxy) DeleteMany(proxies []Proxy) {
 
 	// db.Delete(&p, proxies)
 	// db.Delete(&p, "id in ?", proxies)
-	db.Where("id in ?", proxies).Delete(&p)
+	db.Where("id in ?", proxies).Unscoped().Delete(&p)
 }
