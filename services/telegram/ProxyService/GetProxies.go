@@ -16,27 +16,25 @@ func GetProxies(channel *Channel.Channel) {
 
 	messages := MessageService.GetMessages(chatId, channel.Last_message_receive)
 
-	if messages.TotalCount == 0 || messages.Messages == nil {
+	if messages.Messages == nil {
 		return
 	}
 
-	for _, message := range messages.Messages {
-		var proxy string
+	var proxies []string
 
+	for _, message := range messages.Messages {
 		if channel.Handler == "text" {
-			proxy = textMessageHandler(message)
+			proxies = append(proxies, textMessageHandler(message)...)
 		}
 
 		if channel.Handler == "button" {
-			proxy = buttonMessageHandler(message)
+			proxies = append(proxies, buttonMessageHandler(message)...)
 		}
+	}
 
-		if !isValidProxy(proxy) {
-			continue
-		}
-
+	for _, proxy := range proxies {
 		proxyData, ok := getProxyData(proxy)
-		if ok == false {
+		if !ok {
 			continue
 		}
 
@@ -45,7 +43,7 @@ func GetProxies(channel *Channel.Channel) {
 		}
 
 		ping, isAvailable := checkProxyIsAvailable(proxyData)
-		if isAvailable == false {
+		if !isAvailable {
 			continue
 		}
 
