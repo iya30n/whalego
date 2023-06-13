@@ -51,7 +51,7 @@ func (c *Channel) Update(data map[string]interface{}) {
 
 	defer database.Close(db)
 
-	db.Model(&c).Updates(data)
+	db.Model(&c).UpdateColumns(data)
 }
 
 func (c *Channel) Delete() {
@@ -68,13 +68,11 @@ func (c *Channel) GetChatId() int64 {
 	} */
 
 	chat, err := ChatService.GetChatId(c.Username)
-
 	if err != nil && err.Error() == "USERNAME_NOT_OCCUPIED" || chat == nil {
 		c.Delete()
 
 		return 0
 	}
-
 	errorHandler.LogFile(err)
 
 	/* c.Update(map[string]interface{}{

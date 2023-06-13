@@ -32,7 +32,7 @@ func makeConnection(withProxy bool) *client.Client {
 		FilesDirectory:         filepath.Join(".tdlib", "files"),
 		UseFileDatabase:        true,
 		UseChatInfoDatabase:    true,
-		UseMessageDatabase:     true,
+		UseMessageDatabase:     false,
 		UseSecretChats:         false,
 		ApiId:                  config.Api.ApiId,
 		ApiHash:                config.Api.ApiHash,
