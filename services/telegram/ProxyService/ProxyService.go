@@ -114,7 +114,8 @@ func CheckAllProxies() {
 	chatId, err := ChatService.GetChatId(config.ChannelName)
 	errorHandler.LogFile(err)
 
-	deleteProxies := []Proxy.Proxy{}
+	// deleteProxies := []Proxy.Proxy{}
+	var deleteProxies []uint
 
 	deleteMessages := []int64{}
 
@@ -132,7 +133,7 @@ func CheckAllProxies() {
 			deleteMessages = append(deleteMessages, proxy.ChannelMessageId)
 		}
 
-		deleteProxies = append(deleteProxies, proxy)
+		deleteProxies = append(deleteProxies, proxy.ID)
 	}
 
 	MessageService.DeleteMessages(chatId.Id, deleteMessages)

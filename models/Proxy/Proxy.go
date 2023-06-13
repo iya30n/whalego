@@ -115,7 +115,7 @@ func (p *Proxy) Delete() {
 	db.Delete(&p, p.ID)
 }
 
-func (p *Proxy) DeleteMany(proxies []Proxy) {
+func (p *Proxy) DeleteMany(proxies []uint) {
 	db := database.Connect()
 
 	defer database.Close(db)
