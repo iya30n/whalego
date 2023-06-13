@@ -63,9 +63,9 @@ func (c *Channel) Delete() {
 }
 
 func (c *Channel) GetChatId() int64 {
-	if c.ChatId != 0 {
+	/* if c.ChatId != 0 {
 		return c.ChatId
-	}
+	} */
 
 	chat, err := ChatService.GetChatId(c.Username)
 	if err != nil && err.Error() == "USERNAME_NOT_OCCUPIED" || chat == nil {
@@ -75,9 +75,9 @@ func (c *Channel) GetChatId() int64 {
 	}
 	errorHandler.LogFile(err)
 
-	c.Update(map[string]interface{}{
+	/* c.Update(map[string]interface{}{
 		"chat_id": chat.Id,
-	})
+	}) */
 
 	return chat.Id
 }
